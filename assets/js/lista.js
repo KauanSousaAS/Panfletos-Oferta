@@ -1,7 +1,7 @@
 function loadData() {
 
     let xhr = new XMLHttpRequest();
-    xhr.open("GET", "../php/conexao.php?funcao=listarProdutoFilial", true);
+    xhr.open("GET", "../../php/conexao.php?funcao=listarProdutoFilial", true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
 
@@ -77,7 +77,7 @@ function vincularFilialProduto(idProduto){
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
             pesquisarProduto(document.getElementById('pesquisa'));
-            window.location.href = '../lista.html';
+            window.location.href = 'lista.html';
         }
     }
     xhr.send();

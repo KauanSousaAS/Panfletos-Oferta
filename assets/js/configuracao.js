@@ -1,7 +1,7 @@
 function loadData() {
 
     let xhr = new XMLHttpRequest();
-    xhr.open("GET", "../php/conexao.php?funcao=exibirPanfleto", true);
+    xhr.open("GET", "../../php/conexao.php?funcao=exibirPanfleto", true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
 

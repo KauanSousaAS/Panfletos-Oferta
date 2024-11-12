@@ -24,7 +24,7 @@ body {
 }
 
 .panfleto {
-    background-image: url('../img/background_oferta.png');
+    background-image: url('../images/background_oferta.png');
     background-size: 297mm 210mm;
     background-position: center;
     background-repeat: no-repeat;
