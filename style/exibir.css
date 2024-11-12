@@ -1,0 +1,286 @@
+body {
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+
+@media print {
+
+    /* Remove margens */
+    @page {
+        margin: 0mm;
+    }
+
+    /* Oculta o título, data, hora */
+    header,
+    footer {
+        display: none;
+    }
+}
+
+#dados {
+    padding: 0;
+    border: 0;
+}
+
+.panfleto {
+    background-image: url('../img/background_oferta.png');
+    background-size: 297mm 210mm;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    width: 297mm;
+    height: 210mm;
+    display: block;
+    page-break-inside: avoid;
+}
+
+/* -------------------------------------------------------------------------------------------- unitario */
+.quadroPanfleto {
+    padding: 0;
+    border: 0;
+    margin: 75mm 56mm 29mm 56mm;
+    width: 186mm;
+    height: 105mm;
+    display: flex;
+    position: absolute;
+    justify-content: center;
+}
+
+.descricaoPanfleto {
+    padding: 0;
+    border: 0;
+    margin-top: 33mm;
+    position: absolute;
+    font-size: 24px;
+    font-weight: bold;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+.valorUnitario {
+    padding: 0;
+    border: 0;
+    position: absolute;
+    display: flex;
+    align-items: flex-end;
+    font-family: 'Klavika CH';
+    src: url('fonts/KlavikaCH-BoldCondIt.otf') format('otf');
+    font-weight: bold;
+    font-style: italic;
+    color: #EE3738;
+    margin-left: -40px;
+}
+
+.textoRs {
+    font-size: 50px;
+    margin-bottom: 11mm;
+}
+
+.valorInt {
+    font-size: 200px;
+}
+
+.centavo {
+    font-size: 100px;
+    margin-bottom: 3mm;
+    margin-left: 10px;
+    display: block;
+}
+
+.avista {
+    font-size: 30px;
+    margin-bottom: 12mm;
+    margin-left: 10px;
+    display: block;
+    color: black;
+    text-align: right;
+}
+
+.centAvista {
+    display: block;
+}
+
+.parcela {
+    font-size: 40px;
+    font-family: 'Klavika CH';
+    src: url('fonts/KlavikaCH-BoldCondIt.otf') format('otf');
+    font-weight: bold;
+    font-style: italic;
+    display: flex;
+    align-items: flex-end;
+}
+
+.parcela_grupo {
+    display: block;
+    text-align: center;
+}
+
+.parcela_linha {
+    align-items: flex-end;
+    display: flex;
+    text-align: right;
+    width: 100%;
+    justify-content: flex-end;
+}
+
+.parcela_ou {
+    font-size: 30px;
+    margin-bottom: 6px;
+    margin-left: 5px;
+}
+
+.parcela_rs {
+    font-size: 30px;
+    margin-bottom: 6px;
+    margin-left: 5px;
+}
+
+.parcela_vezes {
+    font-size: 50px;
+    margin-left: 5px;
+    margin-top: -20px;
+    color: #EE3738;
+}
+
+.parcela_preco {
+    font-size: 60px;
+    margin: -20px 0 -4px 5;
+    color: #EE3738;
+}
+
+.parcela_total {
+    font-size: 30px;
+    text-align: right;
+    margin-top: -10px;
+    display: block;
+    width: 100%;
+}
+
+/* -------------------------------------------------------------------------------------------- unitario */
+
+
+/* -------------------------------------------------------------------------------------------- quantidade */
+
+.panfletoQuantidade {
+    padding: 0;
+    border: 0;
+    margin: 75mm 48mm 40mm 48mm;
+    width: 200mm;
+    height: 95mm;
+    display: block;
+    position: absolute;
+    font-family: 'Klavika CH';
+    src: url('fonts/KlavikaCH-BoldCondIt.otf') format('otf');
+    font-weight: bold;
+    font-style: italic;
+    color: #EE3738;
+}
+
+.panfletoQuantidadeDiv1 {
+    padding: 0;
+    border: 0;
+    margin: 0;
+    width: 100%;
+    height: 50mm;
+    display: flex;
+    justify-content: center;
+}
+
+.panfletoQuantidadeDiv111 {
+    color: black;
+    font-size: 30px;
+}
+
+.panfletoQuantidadeDiv112 {
+    display: flex;
+    margin-top: -30px;
+}
+
+.panfletoQuantidadeDiv1121 {
+    font-size: 50px;
+    margin-bottom: 18px;
+    color: #EE3738;
+    display: flex;
+    align-items: flex-end;
+}
+
+.panfletoQuantidadeDiv1122 {
+    display: inline-block;
+    font-size: 200px;
+    margin: -23px 0;
+}
+
+.panfletoQuantidadeDiv11231 {
+    font-size: 100px;
+    margin-bottom: 3mm;
+    margin-left: 10px;
+}
+
+.panfletoQuantidadeDiv11232 {
+    color: black;
+    text-align: right;
+    font-size: 30px;
+    margin-top: -25px;
+    line-height: 28px;
+}
+
+/* Layout para o segundo e terceiro preço de quantidade */
+.panfletoQuantidadeDiv2 {
+    padding: 0;
+    border: 0;
+    margin: 0;
+    width: 100%;
+    height: 45mm;
+    display: flex;
+    justify-content: center;
+}
+
+.panfletoQuantidadeDiv21, .panfletoQuantidadeDiv22 {
+    padding: 0;
+    border: 0;
+    margin: 0;
+    width: 100%;
+    height: 45mm;
+    display: flex;
+    justify-content: center;
+}
+
+.panfletoQuantidadeDiv2111, .panfletoQuantidadeDiv2211{
+    color: black;
+    font-size: 25px;
+}
+
+.panfletoQuantidadeDiv2112, .panfletoQuantidadeDiv2212{
+    display: flex;
+}
+
+.panfletoQuantidadeDiv21121, .panfletoQuantidadeDiv22121{
+    font-size: 40px;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: flex-end;
+}
+
+.panfletoQuantidadeDiv21122, .panfletoQuantidadeDiv22122{
+    font-size: 150px;
+    margin: -28px 0;
+}
+
+.panfletoQuantidadeDiv211231, .panfletoQuantidadeDiv221231{
+    font-size: 50px;
+    margin-bottom: 3mm;
+    margin-left: 8px;
+}
+
+.panfletoQuantidadeDiv211232, .panfletoQuantidadeDiv221232{
+    color: black;
+    text-align: right;
+    font-size: 22px;
+    margin-top: -3px;
+    line-height: 22px;
+}
+
+
+/* -------------------------------------------------------------------------------------------- quantidade */
