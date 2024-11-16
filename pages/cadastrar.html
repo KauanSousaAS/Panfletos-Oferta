@@ -11,7 +11,9 @@
 <body>
     <h1>Panfletos de Oferta - Cadastrar</h1>
 
-    <form action="../php/conexao.php?funcao=cadastrarProduto" method="POST" id="formulario">
+    <form action="../php/functions.php" method="POST" id="formulario">
+        <input type="text" name="funcao" value="cadastrarProduto" style="display: none;">
+
         <label for="statusProduto">Status</label><br>
         <input type="checkbox" name="statusProduto" id="statusProduto" checked><br><br>
         <div style="display: block; width: 100%;">

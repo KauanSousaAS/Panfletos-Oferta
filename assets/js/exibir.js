@@ -1,7 +1,10 @@
 function loadData() {
 
+    const formData = new FormData();
+    formData.append('funcao', 'exibirPanfleto');
+
     let xhr = new XMLHttpRequest();
-    xhr.open("GET", "../../php/conexao.php?funcao=exibirPanfleto", true);
+    xhr.open("POST", "../../php/functions.php", true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
 
@@ -53,7 +56,7 @@ function loadData() {
             }
         }
     };
-    xhr.send();
+    xhr.send(formData);
 
     // Criar divs
     function adicionarDescricao(codProduto, descProduto) {
@@ -63,8 +66,6 @@ function loadData() {
         return divDescricaoPanfleto;
     }
     function adicionarValorUnitario(valor) {
-
-
 
         // valor a vista
         let divQuadroPanfleto = document.createElement('div');
@@ -98,7 +99,6 @@ function loadData() {
         divValorUnitario.appendChild(divCentavoAvista);
 
         divQuadroPanfleto.appendChild(divValorUnitario);
-
 
         //parcelas
 

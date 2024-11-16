@@ -1,7 +1,11 @@
 function loadData() {
 
+    // const form = document.getElementById('meuFormulario');
+    const formData = new FormData();
+    formData.append('funcao', 'listarProdutoFilial');
+
     let xhr = new XMLHttpRequest();
-    xhr.open("GET", "../../php/conexao.php?funcao=listarProdutoFilial", true);
+    xhr.open("POST", "../../php/functions.php", true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
 
@@ -18,6 +22,11 @@ function loadData() {
                 linha.appendChild(descricaoProduto);
 
                 botao.textContent = 'X';
+                botao.type = 'button';
+                let idProdutoA = dadosProduto[x].id_produto;
+                botao.onclick = function () {
+                    desvincularFilialProduto(idProdutoA);
+                };
                 acoes.appendChild(botao);
                 linha.appendChild(acoes);
 
@@ -25,12 +34,13 @@ function loadData() {
             }
         }
     }
-    xhr.send();
+    xhr.send(formData);
 }
 
 loadData();
 
 function pesquisarProduto(input) {
+
     let busca = input.value;
     let dropdown = document.getElementById("dropdown");
 
@@ -39,8 +49,14 @@ function pesquisarProduto(input) {
         return;
     }
 
+    // const form = document.getElementById('meuFormulario');
+    const formData = new FormData();
+    formData.append('funcao', 'pesquisarProdutoFilial');
+    formData.append('busca', busca);
+
+
     let xhr = new XMLHttpRequest();
-    xhr.open("GET", `../php/conexao.php?funcao=pesquisarProdutoFilial&busca=${encodeURIComponent(busca)}`, true);
+    xhr.open("POST", `../../php/functions.php`, true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
             let produtos = JSON.parse(xhr.responseText);
@@ -56,7 +72,7 @@ function pesquisarProduto(input) {
                     botaoAdicionar.type = 'button';
                     div.appendChild(botaoAdicionar);
                     dropdown.appendChild(div);
-                    botaoAdicionar.onclick = function(){
+                    botaoAdicionar.onclick = function () {
                         vincularFilialProduto(produto.id_produto);
                     }
                 });
@@ -65,20 +81,39 @@ function pesquisarProduto(input) {
             }
         }
     };
-    xhr.send();
+    xhr.send(formData);
 }
 
-function vincularFilialProduto(idProduto){
+function vincularFilialProduto(idProduto) {
+
+    const formData = new FormData();
+    formData.append('funcao', 'vincularFilialProduto');
+    formData.append('vincularIdProduto', idProduto);
+    formData.append('vincularIdFilial', 1);
+
     let xhr = new XMLHttpRequest();
-
-    const vincular = [idProduto, 1]; 
-
-    xhr.open("GET", '../php/conexao.php?funcao=vincularFilialProduto&vincularIdProduto='+idProduto+'&vincularIdFilial=1', true);
+    xhr.open("POST", '../../php/functions.php', true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
-            pesquisarProduto(document.getElementById('pesquisa'));
             window.location.href = 'lista.html';
         }
     }
-    xhr.send();
+    xhr.send(formData);
+}
+
+function desvincularFilialProduto(idProduto) {
+    const formData = new FormData();
+    formData.append('funcao', 'desvincularFilialProduto');
+    formData.append('desvincularIdProduto', idProduto);
+    formData.append('desvincularIdFilial', 1);
+    console.log(idProduto);
+
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", '../../php/functions.php', true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            window.location.href = 'lista.html';
+        }
+    }
+    xhr.send(formData);
 }
