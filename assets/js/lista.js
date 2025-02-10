@@ -37,8 +37,6 @@ function loadData() {
     xhr.send(formData);
 }
 
-loadData();
-
 function pesquisarProduto(input) {
 
     let busca = input.value;
@@ -117,3 +115,5 @@ function desvincularFilialProduto(idProduto) {
     }
     xhr.send(formData);
 }
+
+loadData();

@@ -42,6 +42,8 @@ function exibirPanfleto($conexao)
     AND pr.status = 1
     AND pf.status = 1
     ;");
+    
+// ORDER BY p.desc_produto ASC;
 
     while ($l = $db->fetch_assoc()) {
         $dados[] = $l;
