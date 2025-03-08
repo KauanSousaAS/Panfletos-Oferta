@@ -1,56 +1,62 @@
 function loadData() {
 
+    // Define qual função será chamada
     const formData = new FormData();
     formData.append('funcao', 'exibirPanfleto');
 
+    // Gera a requisição para ao servidor para captar os dados dos panfletos
     let xhr = new XMLHttpRequest();
     xhr.open("POST", "../../php/functions.php", true);
     xhr.onreadystatechange = function () {
+
         if (xhr.readyState == 4 && xhr.status == 200) {
 
+            // Recebe os dados dos produtos para gerar os panfletos
             let dadosProduto = JSON.parse(xhr.responseText);
 
+            // Cria uma variável para manipular a div 'dados' no arquivo HTML
             let lista = document.getElementById("dados");
 
-            for (let contagemProduto = 0; contagemProduto < dadosProduto.length; contagemProduto++) {
+            for (let i = 0; i < dadosProduto.length; i++) {
 
-                let divPanfleto = document.createElement('div');
-                divPanfleto.className = 'panfleto';
-                divPanfleto.appendChild(adicionarDescricao(dadosProduto[contagemProduto].cod_produto, dadosProduto[contagemProduto].desc_produto));
+                let divPanfleto = criarDiv('panfleto', null);
 
-                if (dadosProduto[contagemProduto].tipo_venda == 1) {
+                divPanfleto.appendChild(adicionarDescricao(dadosProduto[i].cod_produto, dadosProduto[i].desc_produto));
 
-                    divPanfleto.appendChild(adicionarValorUnitario(dadosProduto[contagemProduto].valor));
+                if (dadosProduto[i].tipo_venda == 1) {
+
+                    divPanfleto.appendChild(adicionarValorUnitario(dadosProduto[i].valor));
 
                 }
-                if (dadosProduto[contagemProduto].tipo_venda == 2) {
 
-                    let dadosProdutoQuantidade = [];
-                    let codigoProdutoContagem = dadosProduto[contagemProduto].cod_produto;
-                    let codigoProdutoTrava = dadosProduto[contagemProduto].cod_produto;
-                    while (codigoProdutoContagem == codigoProdutoTrava) {
+                if (dadosProduto[i].tipo_venda == 2) {
 
-                        if (dadosProduto[contagemProduto]) {
+                    let dados = [];
+                    let codigo = dadosProduto[i].cod_produto;
+                    let trava = codigo;
+                    while (codigo == trava) {
 
-                            codigoProdutoContagem = dadosProduto[contagemProduto].cod_produto;
+                        if (dadosProduto[i]) {
 
-                            if (codigoProdutoContagem == codigoProdutoTrava) {
+                            codigo = dadosProduto[i].cod_produto;
 
-                                dadosProdutoQuantidade.push(dadosProduto[contagemProduto]);
-                                contagemProduto++;
+                            if (codigo == trava) {
+
+                                dados.push(dadosProduto[i]);
+                                i++;
 
                             } else {
 
-                                codigoProdutoTrava = null;
-                                contagemProduto--;
+                                trava = null;
+                                i--;
 
                             }
                         } else {
-                            codigoProdutoTrava = null;
+                            trava = null;
                         }
 
                     }
-                    divPanfleto.appendChild(adicionarValorQuantidade(dadosProdutoQuantidade));
+                    divPanfleto.appendChild(adicionarValorQuantidade(dados));
                 }
                 lista.appendChild(divPanfleto);
             }
@@ -58,158 +64,186 @@ function loadData() {
     };
     xhr.send(formData);
 
-    // Criar divs
+    // Gerando o panfleto
     function adicionarDescricao(codProduto, descProduto) {
-        let divDescricaoPanfleto = document.createElement('div');
-        divDescricaoPanfleto.className = 'descricaoPanfleto';
-        divDescricaoPanfleto.innerHTML = "Cod: " + codProduto + " - " + descProduto;
+
+        let divDescricaoPanfleto = criarDiv('descricaoPanfleto', "Cod: " + codProduto + " - " + descProduto);
+
         return divDescricaoPanfleto;
     }
+
     function adicionarValorUnitario(valor) {
 
-        // valor a vista
-        let divQuadroPanfleto = document.createElement('div');
-        divQuadroPanfleto.className = 'quadroPanfleto';
+        // desc
+        let divQuadroPanfleto = criarDiv('quadroPanfleto', null);
 
-        let divValorUnitario = document.createElement('div');
-        divValorUnitario.className = 'valorUnitario';
+        // desc
+        let divValorUnitario = criarDiv('valorUnitario', null);
 
-        let divTextoRs = document.createElement('div');
-        divTextoRs.className = 'textoRs';
-        divTextoRs.innerHTML = "R$";
+        // desc
+        let divTextoRs = criarDiv('textoRs', "R$");
+
+        // desc
         divValorUnitario.appendChild(divTextoRs);
 
+        // desc
         let valorOferta = parseFloat(valor).toFixed(2).split('.');
-        let divValorInteiro = document.createElement('div');
-        divValorInteiro.className = 'valorInt';
-        divValorInteiro.innerHTML = formatarNumero(valorOferta[0]);
-        divValorUnitario.appendChild(divValorInteiro); 
 
-        let divCentavoAvista = document.createElement('div');
-        divCentavoAvista.className = 'centAvista';
-        let divCentavo = document.createElement('div');
-        divCentavo.className = 'centavo';
-        divCentavo.innerHTML = "," + valorOferta[1];
+        // desc
+        let divValorInteiro = criarDiv('valorInt', formatarNumero(valorOferta[0]));
+
+        // desc
+        divValorUnitario.appendChild(divValorInteiro);
+
+        // desc
+        let divCentavoAvista = criarDiv('centAvista', null);
+
+        // desc
+        let divCentavo = criarDiv('centavo', "," + valorOferta[1]);
+
+        // desc
         divCentavoAvista.appendChild(divCentavo);
-        let divAvista = document.createElement('div');
-        divAvista.className = 'avista';
-        divAvista.innerHTML = "À vista";
+
+        // desc
+        let divAvista = criarDiv('avista', "À vista");
+
+        // desc
         divCentavoAvista.appendChild(divAvista);
 
+        // desc
         divValorUnitario.appendChild(divCentavoAvista);
 
+        // desc
         divQuadroPanfleto.appendChild(divValorUnitario);
 
-        //parcelas
+        // desc
+        let divParcela = criarDiv('parcela', null);
 
-        let divParcela = document.createElement('div');
-        let divParcelaGrupo = document.createElement('div');
-        let divLinhaParcela1 = document.createElement('div');
-        let divLinhaParcela2 = document.createElement('div');
-        let divLinhaParcela3 = document.createElement('div');
-        let divLinhaParcela4 = document.createElement('div');
-        divParcela.className = 'parcela';
-        divParcelaGrupo.className = 'parcela_grupo';
-        divLinhaParcela1.className = 'parcela_linha';
-        divLinhaParcela2.className = 'parcela_linha';
-        divLinhaParcela3.className = 'parcela_linha';
-        divLinhaParcela4.className = 'parcela_linha';
+
+        let divParcelaGrupo = criarDiv('parcela_grupo', null);
+
+        
+        let divLinhaParcela1 = criarDiv('parcela_linha', null);
+
+        // Calcula os valores para 3 parcelas
+        let valorParcela1 = valor * 1.04;
+        let valorParcela3x = valorParcela1 / 3.0;
+        if ((valorParcela3x - Math.floor(valorParcela3x)) >= 0.25 && (valorParcela3x - Math.floor(valorParcela3x)) <= 0.75) {
+            valorParcela3x = Math.floor(valorParcela3x) + 0.5;
+        } else if ((valorParcela3x - Math.floor(valorParcela3x)) > 0.75) {
+            valorParcela3x = Math.floor(valorParcela3x) + 1;
+        } else {
+            valorParcela3x = Math.floor(valorParcela3x);
+        }
+
+        // Calcula os valores para 6 parcelas
+        let valorParcela2 = ((valor * 1.04) * 1.03);
+        let valorParcela6x = valorParcela2 / 6.0;
+        if ((valorParcela6x - Math.floor(valorParcela6x)) >= 0.25 && (valorParcela6x - Math.floor(valorParcela6x)) <= 0.75) {
+            valorParcela6x = Math.floor(valorParcela6x) + 0.5;
+        } else if ((valorParcela6x - Math.floor(valorParcela6x)) > 0.75) {
+            valorParcela6x = Math.floor(valorParcela6x) + 1;
+        } else {
+            valorParcela6x = Math.floor(valorParcela6x);
+        }
+        
+        let valorParcela3xParcela = (formatarNumeroComDecimais(valorParcela3x));
+        
+        // parcelas linha 1: ou 3x R$ ??,??
+        let divLinhaParcelaOu1 = criarDiv('parcela_ou', "OU");
+        let divLinhaParcelaRs1 = criarDiv('parcela_rs', "3X");
+        let divLinhaParcelaVezes1 = criarDiv('parcela_vezes', " R$");
+        let divLinhaParcelaPreco1 = criarDiv('parcela_preco', valorParcela3xParcela.valorInteiro + "," + valorParcela3xParcela.centavo);
+        
+        divLinhaParcela1.appendChild(divLinhaParcelaOu1);
+        divLinhaParcela1.appendChild(divLinhaParcelaVezes1);
+        divLinhaParcela1.appendChild(divLinhaParcelaRs1);
+        divLinhaParcela1.appendChild(divLinhaParcelaPreco1);
+
+
+        
+
+
+
+
+        let divLinhaParcela2 = criarDiv('parcela_linha', null);
+
+        let divLinhaParcela3 = criarDiv('parcela_linha', null);
+
+        let divLinhaParcela4 = criarDiv('parcela_linha', null);
 
         // grupo de parcelas
-        {
-            // parcelas linha 1: ou 3x R$ ??,??
-            let divLinhaParcelaOu1 = document.createElement('div');
-            let divLinhaParcelaRs1 = document.createElement('div');
-            let divLinhaParcelaVezes1 = document.createElement('div');
-            let divLinhaParcelaPreco1 = document.createElement('div');
-            divLinhaParcelaOu1.className = 'parcela_ou';
-            divLinhaParcelaRs1.className = 'parcela_rs';
-            divLinhaParcelaVezes1.className = 'parcela_vezes';
-            divLinhaParcelaPreco1.className = 'parcela_preco';
-
-            let valorParcela1 = valor * 1.04;
-            let valorParcela3x = valorParcela1 / 3.0;
-            if ((valorParcela3x - Math.floor(valorParcela3x)) >= 0.25 && (valorParcela3x - Math.floor(valorParcela3x)) <= 0.75) {
-                valorParcela3x = Math.floor(valorParcela3x) + 0.5;
-            } else if ((valorParcela3x - Math.floor(valorParcela3x)) > 0.75) {
-                valorParcela3x = Math.floor(valorParcela3x) + 1;
-            } else {
-                valorParcela3x = Math.floor(valorParcela3x);
-            }
-
-            divLinhaParcelaOu1.innerHTML = "OU";
-            divLinhaParcela1.appendChild(divLinhaParcelaOu1);
-            divLinhaParcelaVezes1.innerHTML = "3X";
-            divLinhaParcela1.appendChild(divLinhaParcelaVezes1);
-            divLinhaParcelaRs1.innerHTML = " R$";
-            divLinhaParcela1.appendChild(divLinhaParcelaRs1);
-            let valorParcela3xParcela = (formatarNumeroComDecimais(valorParcela3x));
-            divLinhaParcelaPreco1.innerHTML = valorParcela3xParcela.valorInteiro + "," + valorParcela3xParcela.centavo;
-            divLinhaParcela1.appendChild(divLinhaParcelaPreco1);
-            divParcelaGrupo.appendChild(divLinhaParcela1);
-            divParcela.appendChild(divParcelaGrupo);
-            divQuadroPanfleto.appendChild(divParcela);
 
 
-            // parcelas linha 2: total: R$ ??,??
-
-            let divLinhaParcelaTotal1 = document.createElement('div');
-            divLinhaParcelaTotal1.className = 'parcela_total';
-
-            let valorParcela3xTotal = (formatarNumeroComDecimais(valorParcela3x * 3));
-            divLinhaParcelaTotal1.innerHTML = "Total: R$ " + valorParcela3xTotal.valorInteiro + "," + valorParcela3xTotal.centavo;
-            divLinhaParcela2.appendChild(divLinhaParcelaTotal1);
-            divParcelaGrupo.appendChild(divLinhaParcela2);
-            divParcela.appendChild(divParcelaGrupo);
-            divQuadroPanfleto.appendChild(divParcela);
+        
 
 
-            // parcelas linha 3: ou 3x R$ ??,??
-            let divLinhaParcelaOu2 = document.createElement('div');
-            let divLinhaParcelaRs2 = document.createElement('div');
-            let divLinhaParcelaVezes2 = document.createElement('div');
-            let divLinhaParcelaPreco2 = document.createElement('div');
-            divLinhaParcelaOu2.className = 'parcela_ou';
-            divLinhaParcelaRs2.className = 'parcela_rs';
-            divLinhaParcelaVezes2.className = 'parcela_vezes';
-            divLinhaParcelaPreco2.className = 'parcela_preco';
+        divParcelaGrupo.appendChild(divLinhaParcela1);
 
-            let valorParcela2 = ((valor * 1.04) * 1.03);
-            let valorParcela6x = valorParcela2 / 6.0;
-            if ((valorParcela6x - Math.floor(valorParcela6x)) >= 0.25 && (valorParcela6x - Math.floor(valorParcela6x)) <= 0.75) {
-                valorParcela6x = Math.floor(valorParcela6x) + 0.5;
-            } else if ((valorParcela6x - Math.floor(valorParcela6x)) > 0.75) {
-                valorParcela6x = Math.floor(valorParcela6x) + 1;
-            } else {
-                valorParcela6x = Math.floor(valorParcela6x);
-            }
+        divParcela.appendChild(divParcelaGrupo);
 
-            divLinhaParcelaOu2.innerHTML = "OU";
-            divLinhaParcela3.appendChild(divLinhaParcelaOu2);
-            divLinhaParcelaVezes2.innerHTML = "X6";
-            divLinhaParcela3.appendChild(divLinhaParcelaVezes2);
-            divLinhaParcelaRs2.innerHTML = " R$";
-            divLinhaParcela3.appendChild(divLinhaParcelaRs2);
-            let valorParcela6xParcela = (formatarNumeroComDecimais(valorParcela6x));
-            divLinhaParcelaPreco2.innerHTML = valorParcela6xParcela.valorInteiro + "," + valorParcela6xParcela.centavo;
-            divLinhaParcela3.appendChild(divLinhaParcelaPreco2);
-            divParcelaGrupo.appendChild(divLinhaParcela3);
-            divParcela.appendChild(divParcelaGrupo);
-            divQuadroPanfleto.appendChild(divParcela);
+        divQuadroPanfleto.appendChild(divParcela);
 
 
-            // parcelas linha 4: total: R$ ??,??
 
-            let divLinhaParcelaTotal2 = document.createElement('div');
-            divLinhaParcelaTotal2.className = 'parcela_total';
 
-            let valorParcela6xTotal = (formatarNumeroComDecimais(valorParcela6x * 6));
-            divLinhaParcelaTotal2.innerHTML = "Total: R$ " + valorParcela6xTotal.valorInteiro + "," + valorParcela6xTotal.centavo;
-            divLinhaParcela4.appendChild(divLinhaParcelaTotal2);
-            divParcelaGrupo.appendChild(divLinhaParcela4);
-            divParcela.appendChild(divParcelaGrupo);
-            divQuadroPanfleto.appendChild(divParcela);
-        }
+
+
+
+
+
+
+        // parcelas linha 2: total: R$ ??,??
+
+        let divLinhaParcelaTotal1 = document.createElement('div');
+        divLinhaParcelaTotal1.className = 'parcela_total';
+
+        let valorParcela3xTotal = (formatarNumeroComDecimais(valorParcela3x * 3));
+        divLinhaParcelaTotal1.innerHTML = "Total: R$ " + valorParcela3xTotal.valorInteiro + "," + valorParcela3xTotal.centavo;
+        divLinhaParcela2.appendChild(divLinhaParcelaTotal1);
+        divParcelaGrupo.appendChild(divLinhaParcela2);
+        divParcela.appendChild(divParcelaGrupo);
+        divQuadroPanfleto.appendChild(divParcela);
+
+
+        // parcelas linha 3: ou 3x R$ ??,??
+        let divLinhaParcelaOu2 = document.createElement('div');
+        let divLinhaParcelaRs2 = document.createElement('div');
+        let divLinhaParcelaVezes2 = document.createElement('div');
+        let divLinhaParcelaPreco2 = document.createElement('div');
+        divLinhaParcelaOu2.className = 'parcela_ou';
+        divLinhaParcelaRs2.className = 'parcela_rs';
+        divLinhaParcelaVezes2.className = 'parcela_vezes';
+        divLinhaParcelaPreco2.className = 'parcela_preco';
+
+        
+
+        divLinhaParcelaOu2.innerHTML = "OU";
+        divLinhaParcela3.appendChild(divLinhaParcelaOu2);
+        divLinhaParcelaVezes2.innerHTML = "X6";
+        divLinhaParcela3.appendChild(divLinhaParcelaVezes2);
+        divLinhaParcelaRs2.innerHTML = " R$";
+        divLinhaParcela3.appendChild(divLinhaParcelaRs2);
+        let valorParcela6xParcela = (formatarNumeroComDecimais(valorParcela6x));
+        divLinhaParcelaPreco2.innerHTML = valorParcela6xParcela.valorInteiro + "," + valorParcela6xParcela.centavo;
+        divLinhaParcela3.appendChild(divLinhaParcelaPreco2);
+        divParcelaGrupo.appendChild(divLinhaParcela3);
+        divParcela.appendChild(divParcelaGrupo);
+        divQuadroPanfleto.appendChild(divParcela);
+
+
+        // parcelas linha 4: total: R$ ??,??
+
+        let divLinhaParcelaTotal2 = document.createElement('div');
+        divLinhaParcelaTotal2.className = 'parcela_total';
+
+        let valorParcela6xTotal = (formatarNumeroComDecimais(valorParcela6x * 6));
+        divLinhaParcelaTotal2.innerHTML = "Total: R$ " + valorParcela6xTotal.valorInteiro + "," + valorParcela6xTotal.centavo;
+        divLinhaParcela4.appendChild(divLinhaParcelaTotal2);
+        divParcelaGrupo.appendChild(divLinhaParcela4);
+        divParcela.appendChild(divParcelaGrupo);
+        divQuadroPanfleto.appendChild(divParcela);
+
 
         return divQuadroPanfleto;
     }
@@ -456,6 +490,14 @@ function loadData() {
         }
 
         return tipo;
+    }
+    function criarDiv(classeDiv, conteudoDiv) {
+        let div = document.createElement('div');
+        div.className = classeDiv;
+        if (conteudoDiv != null) {
+            div.innerHTML = conteudoDiv;
+        }
+        return div;
     }
 }
 
