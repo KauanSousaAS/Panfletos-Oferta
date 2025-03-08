@@ -83,7 +83,7 @@ function loadData() {
         let divValorInteiro = document.createElement('div');
         divValorInteiro.className = 'valorInt';
         divValorInteiro.innerHTML = formatarNumero(valorOferta[0]);
-        divValorUnitario.appendChild(divValorInteiro);
+        divValorUnitario.appendChild(divValorInteiro); 
 
         let divCentavoAvista = document.createElement('div');
         divCentavoAvista.className = 'centAvista';
