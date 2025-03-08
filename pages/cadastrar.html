@@ -15,22 +15,24 @@
         <input type="text" name="funcao" value="cadastrarProduto" style="display: none;">
 
         <label for="statusProduto">Status</label><br>
-        <input type="checkbox" name="statusProduto" id="statusProduto" checked><br><br>
+
+        <input type="checkbox" tabindex="1" name="statusProduto" id="statusProduto" checked><br><br>
+
         <div style="display: block; width: 100%;">
             <div style="width: 15%; display: inline-block; margin-right: 5%;">
                 <label for="codigoProduto">Código</label><br>
-                <input autocomplete="off" type="text" name="codigoProduto" id="codigoProduto" style="width: 100%;">
+                <input autocomplete="off" tabindex="2" type="text" name="codigoProduto" id="codigoProduto" style="width: 100%;">
             </div>
             <div style="width: 75%; display: inline-block;">
                 <label for="descricaoProduto">Descrição</label><br>
-                <input autocomplete="off" type="text" name="descricaoProduto" id="descricaoProduto" style="width: 100%;">
+                <input autocomplete="off" tabindex="3" type="text" name="descricaoProduto" id="descricaoProduto" style="width: 100%;">
             </div>
         </div>
         <br>
         <div style="display: block; width: 100%;">
             <div style="width: 15%; display: inline-block; margin-right: 5%;">
                 <label for="tipoProduto">Tipo do Produto</label><br>
-                <select name="tipoProduto" id="tipoProduto">
+                <select tabindex="4" name="tipoProduto" id="tipoProduto">
                     <option value="1">Unidade</option>
                     <option value="2">Quilo</option>
                     <option value="3">Metro</option>
@@ -43,7 +45,7 @@
             </div>
             <div style="width: 15%; display: inline-block; margin-right: 5%;">
                 <label for="tipoVenda">Tipo de Venda</label><br>
-                <select name="tipoVenda" id="tipoVenda">
+                <select tabindex="5" name="tipoVenda" id="tipoVenda">
                     <option value="1" selected>Unitário</option>
                     <option value="2">Quantidade</option>
                 </select>
@@ -55,11 +57,11 @@
             <Tr>
                 <td>
                     <label for="valorUnitarioPr">Valor PR</label><br>
-                    <input autocomplete="off" type="text" name="valorUnitarioPr" id="valorUnitarioPr"><br>
+                    <input autocomplete="off" tabindex="6" type="text" name="valorUnitarioPr" id="valorUnitarioPr"><br>
                 </td>
                 <td>
                     <label for="valorUnitarioMs">Valor MS</label><br>
-                    <input autocomplete="off" type="text" name="valorUnitarioMs" id="valorUnitarioMs"><br>
+                    <input autocomplete="off" tabindex="7" type="text" name="valorUnitarioMs" id="valorUnitarioMs"><br>
                 </td>
             </Tr>
         </div>
@@ -78,51 +80,51 @@
                 <tr>
                     <td>
                         <label for="quantidadeProduto1">Quantidade 1</label>
-                        <input autocomplete="off" tabindex="1" type="number" name="quantidadeProduto1" id="quantidadeProduto1" min="1" max="999">
+                        <input autocomplete="off" tabindex="8" type="number" name="quantidadeProduto1" id="quantidadeProduto1" min="1" max="999">
                     </td>
                     <td>
                         <label for="valorProduto1pr">Valor 1:</label>
-                        <input autocomplete="off" tabindex="4" type="text" name="valorProduto1pr" id="valorProduto1pr">
+                        <input autocomplete="off" tabindex="11" type="text" name="valorProduto1pr" id="valorProduto1pr">
                     </td>
                     <td>
                         <label for="valorProduto1ms">Valor 1:</label>
-                        <input autocomplete="off" tabindex="7" type="text" name="valorProduto1ms" id="valorProduto1ms">
+                        <input autocomplete="off" tabindex="14" type="text" name="valorProduto1ms" id="valorProduto1ms">
                     </td>
                 </tr>
                 <tr>
                     <td>
                         <label for="quantidadeProduto2">Quantidade 2</label>
-                        <input autocomplete="off" tabindex="2" type="number" name="quantidadeProduto2" id="quantidadeProduto2" min="1" max="999">
+                        <input autocomplete="off" tabindex="9" type="number" name="quantidadeProduto2" id="quantidadeProduto2" min="1" max="999">
                     </td>
                     <td>
                         <label for="valorProduto2pr">Valor 2:</label>
-                        <input autocomplete="off" tabindex="5" type="text" name="valorProduto2pr" id="valorProduto2pr">
+                        <input autocomplete="off" tabindex="12" type="text" name="valorProduto2pr" id="valorProduto2pr">
                     </td>
                     <td>
                         <label for="valorProduto2ms">Valor 2:</label>
-                        <input autocomplete="off" tabindex="8" type="text" name="valorProduto2ms" id="valorProduto2ms">
+                        <input autocomplete="off" tabindex="15" type="text" name="valorProduto2ms" id="valorProduto2ms">
                     </td>
                 </tr>
                 <tr>
                     <td>
                         <label for="quantidadeProduto3">Quantidade 3</label>
-                        <input autocomplete="off" tabindex="3" type="number" name="quantidadeProduto3" id="quantidadeProduto3" min="1" max="999">
+                        <input autocomplete="off" tabindex="10" type="number" name="quantidadeProduto3" id="quantidadeProduto3" min="1" max="999">
                     </td>
                     <td>
                         <label for="valorProduto3pr">Valor 3:</label>
-                        <input autocomplete="off" tabindex="6" type="text" name="valorProduto3pr" id="valorProduto3pr">
+                        <input autocomplete="off" tabindex="13" type="text" name="valorProduto3pr" id="valorProduto3pr">
                     </td>
                     <td>
                         <label for="valorProduto3ms">Valor 3:</label>
-                        <input autocomplete="off" tabindex="9" type="text" name="valorProduto3ms" id="valorProduto3ms">
+                        <input autocomplete="off" tabindex="16" type="text" name="valorProduto3ms" id="valorProduto3ms">
                     </td>
                 </tr>
             </table>
         </div>
         <br>
 
-        <button type="button"><a href="../index.html">Voltar</a></button>
-        <button type="submit">Cadastrar</button>
+        <button type="button" tabindex="17" onclick="window.location.href='../index.html'">Voltar</button>
+        <button type="submit" tabindex="18">Cadastrar</button>
     </form>
 
     <script src="../assets/js/cadastrar.js"></script>
