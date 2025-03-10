@@ -6,7 +6,7 @@ function loadData() {
 
     // Gera a requisição para ao servidor para captar os dados dos panfletos
     let xhr = new XMLHttpRequest();
-    xhr.open("POST", "../../php/functions.php", true);
+    xhr.open("POST", "../../php/funcoes.php", true);
     xhr.onreadystatechange = function () {
 
         if (xhr.readyState == 4 && xhr.status == 200) {
@@ -119,131 +119,91 @@ function loadData() {
         // desc
         let divParcela = criarDiv('parcela', null);
 
-
+        // desc
         let divParcelaGrupo = criarDiv('parcela_grupo', null);
 
-        
-        let divLinhaParcela1 = criarDiv('parcela_linha', null);
 
         // Calcula os valores para 3 parcelas
-        let valorParcela1 = valor * 1.04;
-        let valorParcela3x = valorParcela1 / 3.0;
-        if ((valorParcela3x - Math.floor(valorParcela3x)) >= 0.25 && (valorParcela3x - Math.floor(valorParcela3x)) <= 0.75) {
-            valorParcela3x = Math.floor(valorParcela3x) + 0.5;
-        } else if ((valorParcela3x - Math.floor(valorParcela3x)) > 0.75) {
-            valorParcela3x = Math.floor(valorParcela3x) + 1;
-        } else {
-            valorParcela3x = Math.floor(valorParcela3x);
-        }
+        let valorParcela1 = (valor * 1.04);
+
+        let valorParcela3x = tirarMediaParcela(valorParcela1 / 3.0);
+
+        let valorParcela3xParcela = (formatarNumeroComDecimais(valorParcela3x));
+
+        let valorParcela3xTotal = (formatarNumeroComDecimais(valorParcela3x * 3));
+
 
         // Calcula os valores para 6 parcelas
         let valorParcela2 = ((valor * 1.04) * 1.03);
-        let valorParcela6x = valorParcela2 / 6.0;
-        if ((valorParcela6x - Math.floor(valorParcela6x)) >= 0.25 && (valorParcela6x - Math.floor(valorParcela6x)) <= 0.75) {
-            valorParcela6x = Math.floor(valorParcela6x) + 0.5;
-        } else if ((valorParcela6x - Math.floor(valorParcela6x)) > 0.75) {
-            valorParcela6x = Math.floor(valorParcela6x) + 1;
-        } else {
-            valorParcela6x = Math.floor(valorParcela6x);
-        }
-        
-        let valorParcela3xParcela = (formatarNumeroComDecimais(valorParcela3x));
-        
-        // parcelas linha 1: ou 3x R$ ??,??
+
+        let valorParcela6x = tirarMediaParcela(valorParcela2 / 6.0);
+
+        let valorParcela6xParcela = (formatarNumeroComDecimais(valorParcela6x));
+
+        let valorParcela6xTotal = (formatarNumeroComDecimais(valorParcela6x * 6));
+
+
+        // parcelas linha 1: ou 3x R$ XX,XX
+        let divLinhaParcela1 = criarDiv('parcela_linha', null);
+
         let divLinhaParcelaOu1 = criarDiv('parcela_ou', "OU");
-        let divLinhaParcelaRs1 = criarDiv('parcela_rs', "3X");
-        let divLinhaParcelaVezes1 = criarDiv('parcela_vezes', " R$");
+        let divLinhaParcelaVezes1 = criarDiv('parcela_vezes', "3X");
+        let divLinhaParcelaRs1 = criarDiv('parcela_rs', " R$");
         let divLinhaParcelaPreco1 = criarDiv('parcela_preco', valorParcela3xParcela.valorInteiro + "," + valorParcela3xParcela.centavo);
-        
+
         divLinhaParcela1.appendChild(divLinhaParcelaOu1);
         divLinhaParcela1.appendChild(divLinhaParcelaVezes1);
         divLinhaParcela1.appendChild(divLinhaParcelaRs1);
         divLinhaParcela1.appendChild(divLinhaParcelaPreco1);
 
-
-        
-
-
-
-
-        let divLinhaParcela2 = criarDiv('parcela_linha', null);
-
-        let divLinhaParcela3 = criarDiv('parcela_linha', null);
-
-        let divLinhaParcela4 = criarDiv('parcela_linha', null);
-
-        // grupo de parcelas
-
-
-        
-
-
         divParcelaGrupo.appendChild(divLinhaParcela1);
-
         divParcela.appendChild(divParcelaGrupo);
-
         divQuadroPanfleto.appendChild(divParcela);
 
 
+        // parcelas linha 2: total: R$ XX,XX
+        let divLinhaParcela2 = criarDiv('parcela_linha', null);
 
+        let divLinhaParcelaTotal1 = criarDiv('parcela_total', "Total: R$ " + valorParcela3xTotal.valorInteiro + "," + valorParcela3xTotal.centavo);
 
-
-
-
-
-
-
-        // parcelas linha 2: total: R$ ??,??
-
-        let divLinhaParcelaTotal1 = document.createElement('div');
-        divLinhaParcelaTotal1.className = 'parcela_total';
-
-        let valorParcela3xTotal = (formatarNumeroComDecimais(valorParcela3x * 3));
-        divLinhaParcelaTotal1.innerHTML = "Total: R$ " + valorParcela3xTotal.valorInteiro + "," + valorParcela3xTotal.centavo;
         divLinhaParcela2.appendChild(divLinhaParcelaTotal1);
+
         divParcelaGrupo.appendChild(divLinhaParcela2);
         divParcela.appendChild(divParcelaGrupo);
         divQuadroPanfleto.appendChild(divParcela);
 
 
-        // parcelas linha 3: ou 3x R$ ??,??
-        let divLinhaParcelaOu2 = document.createElement('div');
-        let divLinhaParcelaRs2 = document.createElement('div');
-        let divLinhaParcelaVezes2 = document.createElement('div');
-        let divLinhaParcelaPreco2 = document.createElement('div');
-        divLinhaParcelaOu2.className = 'parcela_ou';
-        divLinhaParcelaRs2.className = 'parcela_rs';
-        divLinhaParcelaVezes2.className = 'parcela_vezes';
-        divLinhaParcelaPreco2.className = 'parcela_preco';
+        // parcelas linha 3: ou 6x R$ XX,XX
+        let divLinhaParcela3 = criarDiv('parcela_linha', null);
 
-        
+        let divLinhaParcelaOu2 = criarDiv('parcela_ou', "OU");
+        let divLinhaParcelaVezes2 = criarDiv('parcela_vezes', "6X");
+        let divLinhaParcelaRs2 = criarDiv('parcela_rs', " R$");
+        let divLinhaParcelaPreco2 = criarDiv('parcela_preco', valorParcela6xParcela.valorInteiro + "," + valorParcela6xParcela.centavo);
 
-        divLinhaParcelaOu2.innerHTML = "OU";
         divLinhaParcela3.appendChild(divLinhaParcelaOu2);
-        divLinhaParcelaVezes2.innerHTML = "X6";
         divLinhaParcela3.appendChild(divLinhaParcelaVezes2);
-        divLinhaParcelaRs2.innerHTML = " R$";
         divLinhaParcela3.appendChild(divLinhaParcelaRs2);
-        let valorParcela6xParcela = (formatarNumeroComDecimais(valorParcela6x));
-        divLinhaParcelaPreco2.innerHTML = valorParcela6xParcela.valorInteiro + "," + valorParcela6xParcela.centavo;
         divLinhaParcela3.appendChild(divLinhaParcelaPreco2);
+
         divParcelaGrupo.appendChild(divLinhaParcela3);
         divParcela.appendChild(divParcelaGrupo);
         divQuadroPanfleto.appendChild(divParcela);
 
 
-        // parcelas linha 4: total: R$ ??,??
+        // parcelas linha 4: total: R$ XX,XX
+        let divLinhaParcela4 = criarDiv('parcela_linha', null);
 
         let divLinhaParcelaTotal2 = document.createElement('div');
         divLinhaParcelaTotal2.className = 'parcela_total';
 
-        let valorParcela6xTotal = (formatarNumeroComDecimais(valorParcela6x * 6));
         divLinhaParcelaTotal2.innerHTML = "Total: R$ " + valorParcela6xTotal.valorInteiro + "," + valorParcela6xTotal.centavo;
+
         divLinhaParcela4.appendChild(divLinhaParcelaTotal2);
+
         divParcelaGrupo.appendChild(divLinhaParcela4);
         divParcela.appendChild(divParcelaGrupo);
         divQuadroPanfleto.appendChild(divParcela);
-
 
         return divQuadroPanfleto;
     }
@@ -498,6 +458,17 @@ function loadData() {
             div.innerHTML = conteudoDiv;
         }
         return div;
+    }
+    function tirarMediaParcela(numero) {
+        if ((numero - Math.floor(numero)) >= 0.25 && (numero - Math.floor(numero)) <= 0.75) {
+            numero = Math.floor(numero) + 0.5;
+        } else if ((numero - Math.floor(numero)) > 0.75) {
+            numero = Math.floor(numero) + 1;
+        } else {
+            numero = Math.floor(numero);
+        }
+
+        return numero;
     }
 }
 

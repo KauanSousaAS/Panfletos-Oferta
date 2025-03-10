@@ -65,7 +65,7 @@ body {
     position: absolute;
     display: flex;
     align-items: flex-end;
-    src: url('../fonts/KlavikaCH-BoldCondIt.otf') format('otf');
+    src: url('../fonts/KlavikaCH-BoldCondIt') format('otf');
     font-family: 'Klavika CH';
     font-weight: bold;
     font-style: italic;

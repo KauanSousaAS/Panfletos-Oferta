@@ -1,11 +1,10 @@
 function loadData() {
 
-    // const form = document.getElementById('meuFormulario');
     const formData = new FormData();
     formData.append('funcao', 'listarProdutoFilial');
 
     let xhr = new XMLHttpRequest();
-    xhr.open("POST", "../../php/functions.php", true);
+    xhr.open("POST", "../../php/funcoes.php", true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
 
@@ -47,16 +46,16 @@ function pesquisarProduto(input) {
         return;
     }
 
-    // const form = document.getElementById('meuFormulario');
     const formData = new FormData();
     formData.append('funcao', 'pesquisarProdutoFilial');
     formData.append('busca', busca);
 
 
     let xhr = new XMLHttpRequest();
-    xhr.open("POST", `../../php/functions.php`, true);
+    xhr.open("POST", `../../php/funcoes.php`, true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
+
             let produtos = JSON.parse(xhr.responseText);
 
             dropdown.innerHTML = "";
@@ -90,7 +89,7 @@ function vincularFilialProduto(idProduto) {
     formData.append('vincularIdFilial', 1);
 
     let xhr = new XMLHttpRequest();
-    xhr.open("POST", '../../php/functions.php', true);
+    xhr.open("POST", '../../php/funcoes.php', true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
             window.location.href = 'lista.html';
@@ -107,7 +106,7 @@ function desvincularFilialProduto(idProduto) {
     console.log(idProduto);
 
     let xhr = new XMLHttpRequest();
-    xhr.open("POST", '../../php/functions.php', true);
+    xhr.open("POST", '../../php/funcoes.php', true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
             window.location.href = 'lista.html';

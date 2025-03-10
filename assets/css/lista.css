@@ -25,7 +25,8 @@ table{
     background-color: rgb(218, 218, 218);
     margin: 20px 0;
     width: 100%;
-    min-height: 100px;
+    max-height: 300px;
+    overflow: auto;
     border-radius: 10px;
 }
 
