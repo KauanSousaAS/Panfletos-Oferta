@@ -15,16 +15,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $cadastrarProduto->cadastrarProduto();
             break;
         case 'listarProdutoFilial':
-            listarProdutoFilial($conexao);
+            $listarProdutoFilial = new ListarProdutoFilial($conexao);
+            $listarProdutoFilial->listarProdutoFilial();
             break;
         case 'pesquisarProdutoFilial':
-            pesquisarProdutoFilial($conexao);
+            $pesquisarProdutoFilial = new PesquisarProdutoFilial($conexao);
+            $pesquisarProdutoFilial->pesquisarProdutoFilial();
             break;
         case 'vincularFilialProduto':
-            vincularFilialProduto($conexao);
+            $vinculoFilialProduto = new VinculoFilialProduto($conexao);
+            $vinculoFilialProduto->vincularFilialProduto();
             break;
         case 'desvincularFilialProduto':
-            desvincularFilialProduto($conexao);
+            $vinculoFilialProduto = new VinculoFilialProduto($conexao);
+            $vinculoFilialProduto->desvincularFilialProduto();
             break;
         default:
             break;
@@ -98,14 +102,14 @@ class CadastrarProduto
         $tipoProduto = $_POST['tipoProduto'];
 
         $sql = "INSERT INTO `tb_produto` (
-        `cod_produto`,
-        `desc_produto`,
-        `tipo_produto`
-        )VALUES(
-        ?,
-        ?,
-        ?
-        );";
+                `cod_produto`,
+                `desc_produto`,
+                `tipo_produto`
+                )VALUES(
+                ?,
+                ?,
+                ?
+                );";
 
         $statement = $this->conexao->prepare($sql);
 
@@ -369,83 +373,176 @@ class CadastrarProduto
     }
 }
 
-
-function listarProdutoFilial($conexao)
+class ListarProdutoFilial
 {
-    $db = mysqli_query($conexao, "  SELECT p.id_produto, p.cod_produto, p.desc_produto
-                                    FROM tb_filial f
-                                    JOIN filial_produto pf ON f.id_filial = pf.fk_filial
-                                    JOIN tb_produto p ON p.id_produto = pf.fk_produto
-                                    WHERE f.filial = 'CP'
-                                    AND f.uf = 'PR'
-                                    AND p.status = 1
-                                    AND pf.status = 1
-                                    ORDER BY p.desc_produto ASC
-                                    ;");
 
-    while ($l = $db->fetch_assoc()) {
-        $dados[] = $l;
+    private $conexao;
+
+    public function __construct($conexao)
+    {
+        $this->conexao = $conexao;
     }
 
-    echo json_encode($dados);
+    public function listarProdutoFilial()
+    {
+        $sql = "SELECT p.id_produto, p.cod_produto, p.desc_produto
+                FROM tb_filial f
+                JOIN filial_produto pf ON f.id_filial = pf.fk_filial
+                JOIN tb_produto p ON p.id_produto = pf.fk_produto
+                WHERE f.filial = 'CP'
+                AND f.uf = 'PR'
+                AND p.status = 1
+                AND pf.status = 1
+                ORDER BY p.desc_produto ASC
+                ;";
+
+        $statement = $this->conexao->prepare($sql);
+
+        if (!$statement) {
+            throw new Exception("Erro na preparação da consulta: " . $this->conexao->error);
+        }
+
+        if (!$statement->execute()) {
+            throw new Exception("Erro na execução da consulta: " . $this->conexao->error);
+        }
+
+        $result = $statement->get_result();
+
+        if (!$result) {
+            throw new Exception("Erro ao obter os resultados da consulta: " . $this->conexao->error);
+        }
+
+        $dados = $result->fetch_all(MYSQLI_ASSOC);
+
+        echo json_encode($dados);
+    }
 }
 
-function pesquisarProdutoFilial($conexao)
+class PesquisarProdutoFilial
 {
-    $busca = $_POST['busca'];
-    $db = mysqli_query($conexao, "  SELECT p.id_produto, p.cod_produto, p.desc_produto
-                                    FROM tb_produto p
-                                    WHERE NOT EXISTS (
-                                        SELECT 1 
-                                        FROM filial_produto pf 
-                                        WHERE pf.fk_produto = p.id_produto 
-                                        AND pf.fk_filial = 1
-                                        )
-                                    AND (p.cod_produto LIKE '%$busca%' OR p.desc_produto LIKE '%$busca%')
-                                    ;");
 
-    while ($l = $db->fetch_assoc()) {
-        $dados[] = $l;
+    private $conexao;
+
+    public function __construct($conexao)
+    {
+        $this->conexao = $conexao;
     }
 
-    echo json_encode($dados);
+    function pesquisarProdutoFilial()
+    {
+        $busca = "%" . $_POST['busca'] . "%";
+        $sql = "SELECT p.id_produto, p.cod_produto, p.desc_produto
+                FROM tb_produto p
+                WHERE NOT EXISTS
+                (
+                SELECT 1 
+                FROM filial_produto pf 
+                WHERE pf.fk_produto = p.id_produto 
+                AND pf.fk_filial = 1
+                )
+                AND
+                (
+                p.cod_produto LIKE ?
+                OR
+                p.desc_produto LIKE ?
+                )
+                ;";
+
+        $statement = $this->conexao->prepare($sql);
+
+        if (!$statement) {
+            throw new Exception("Erro na preparação da consulta: " . $this->conexao->error);
+        }
+
+        $statement->bind_param("ss", $busca, $busca);
+
+        if (!$statement->execute()) {
+            throw new Exception("Erro na execução da consulta: " . $this->conexao->error);
+        }
+
+        $result = $statement->get_result();
+
+        if (!$result) {
+            throw new Exception("Erro ao obter os resultados da consulta: " . $this->conexao->error);
+        }
+
+        $dados = $result->fetch_all(MYSQLI_ASSOC);
+
+        echo json_encode($dados);
+    }
 }
 
-function vincularFilialProduto($conexao)
+class VinculoFilialProduto
 {
-    $idProduto = null;
-    $idFilial = null;
-    if (isset($_POST['vincularIdProduto'])) {
-        $idProduto = $_POST['vincularIdProduto'];
-    }
-    if (isset($_POST['vincularIdFilial'])) {
-        $idFilial = $_POST['vincularIdFilial'];
-    }
-    $sql = "INSERT INTO `filial_produto` (
-            `fk_produto`, 
-            `fk_filial`
-            )VALUES(
-            $idProduto, 
-            $idFilial
-            );";
 
-    mysqli_query($conexao, $sql);
-}
+    private $conexao;
 
-function desvincularFilialProduto($conexao)
-{
-    $idProduto = null;
-    $idFilial = null;
-    if (isset($_POST['desvincularIdProduto'])) {
-        $idProduto = $_POST['desvincularIdProduto'];
+    public function __construct($conexao)
+    {
+        $this->conexao = $conexao;
     }
-    if (isset($_POST['desvincularIdFilial'])) {
-        $idFilial = $_POST['desvincularIdFilial'];
-    }
-    $sql = "DELETE FROM filial_produto
-            WHERE fk_produto = $idProduto 
-            AND fk_filial = $idFilial
-            ;";
 
-    mysqli_query($conexao, $sql);
+    function vincularFilialProduto()
+    {
+        $idProduto = null;
+        $idFilial = null;
+
+        // ==================================================================================================================
+        // Conferir se esse código funciona sem esses ifs
+        // ==================================================================================================================
+
+        if (isset($_POST['vincularIdProduto'])) {
+            $idProduto = $_POST['vincularIdProduto'];
+        }
+        if (isset($_POST['vincularIdFilial'])) {
+            $idFilial = $_POST['vincularIdFilial'];
+        }
+        $sql = "INSERT INTO `filial_produto` (
+                `fk_produto`, 
+                `fk_filial`
+                )VALUES(
+                ?, 
+                ?
+                );";
+
+        $statement = $this->conexao->prepare($sql);
+
+        if (!$statement) {
+            throw new Exception("Erro na preparação da consulta: " . $this->conexao->error);
+        }
+
+        $statement->bind_param("ss", $idProduto, $idFilial);
+
+        if (!$statement->execute()) {
+            throw new Exception("Erro na execução da consulta: " . $this->conexao->error);
+        }
+    }
+
+    function desvincularFilialProduto()
+    {
+        $idProduto = null;
+        $idFilial = null;
+        if (isset($_POST['desvincularIdProduto'])) {
+            $idProduto = $_POST['desvincularIdProduto'];
+        }
+        if (isset($_POST['desvincularIdFilial'])) {
+            $idFilial = $_POST['desvincularIdFilial'];
+        }
+        $sql = "DELETE FROM filial_produto
+                WHERE fk_produto = ? 
+                AND fk_filial = ?
+                ;";
+
+        $statement = $this->conexao->prepare($sql);
+
+        if (!$statement) {
+            throw new Exception("Erro na preparação da consulta: " . $this->conexao->error);
+        }
+
+        $statement->bind_param("ss", $idProduto, $idFilial);
+
+        if (!$statement->execute()) {
+            throw new Exception("Erro na execução da consulta: " . $this->conexao->error);
+        }
+    }
 }
