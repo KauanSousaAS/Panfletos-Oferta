@@ -127,7 +127,7 @@ class CadastrarProduto
 
         if ($_POST['tipoVenda'] == 1) {
             if (isset($_POST['valorUnitarioPr'])) {
-                $valor = $_POST['valorUnitarioPr'];
+                $valor = str_replace(",", ".", $_POST['valorUnitarioPr']);
 
                 $sql = "INSERT INTO `tb_preco`(
                         `tipo_venda`,
@@ -188,7 +188,7 @@ class CadastrarProduto
 
         if ($_POST['tipoVenda'] == 2) {
             if (isset($_POST['valorProduto1pr'])) {
-                $valor = $_POST['valorProduto1pr'];
+                $valor = str_replace(",", ".", $_POST['valorProduto1pr']);
                 $quantidade = $_POST['quantidadeProduto1'];
 
                 $sql = "INSERT INTO `tb_preco`(
@@ -218,7 +218,7 @@ class CadastrarProduto
                 }
             }
             if (isset($_POST['valorProduto1ms'])) {
-                $valor = $_POST['valorProduto1ms'];
+                $valor = str_replace(",", ".", $_POST['valorProduto1ms']);
                 $quantidade = $_POST['quantidadeProduto1'];
 
                 $sql = "INSERT INTO `tb_preco`(
@@ -248,7 +248,7 @@ class CadastrarProduto
                 }
             }
             if (isset($_POST['valorProduto2pr'])) {
-                $valor = $_POST['valorProduto2pr'];
+                $valor = str_replace(",", ".", $_POST['valorProduto2pr']);
                 $quantidade = $_POST['quantidadeProduto2'];
 
                 $sql = "INSERT INTO `tb_preco`(
@@ -278,7 +278,7 @@ class CadastrarProduto
                 }
             }
             if (isset($_POST['valorProduto2ms'])) {
-                $valor = $_POST['valorProduto2ms'];
+                $valor = str_replace(",", ".", $_POST['valorProduto2ms']);
                 $quantidade = $_POST['quantidadeProduto2'];
 
                 $sql = "INSERT INTO `tb_preco`(
@@ -308,7 +308,7 @@ class CadastrarProduto
                 }
             }
             if (isset($_POST['valorProduto3pr'])) {
-                $valor = $_POST['valorProduto3pr'];
+                $valor = str_replace(",", ".", $_POST['valorProduto3pr']);
                 $quantidade = $_POST['quantidadeProduto3'];
 
                 $sql = "INSERT INTO `tb_preco`(
@@ -338,7 +338,7 @@ class CadastrarProduto
                 }
             }
             if (isset($_POST['valorProduto3ms'])) {
-                $valor = $_POST['valorProduto3ms'];
+                $valor = str_replace(",", ".", $_POST['valorProduto3ms']);
                 $quantidade = $_POST['quantidadeProduto3'];
 
                 $sql = "INSERT INTO `tb_preco`(
