@@ -10,7 +10,6 @@ function loadData() {
     xhr.onreadystatechange = function () {
 
         if (xhr.readyState == 4 && xhr.status == 200) {
-
             // Recebe os dados dos produtos para gerar os panfletos
             let dadosProduto = JSON.parse(xhr.responseText);
 
@@ -71,7 +70,6 @@ function loadData() {
 
         return divDescricaoPanfleto;
     }
-
     function adicionarValorUnitario(valor) {
 
         // desc
@@ -370,7 +368,7 @@ function loadData() {
         return panfletoQuantidade;
     }
 
-    // Ferramentas
+    // Utilitários
     function formatarNumero(numero) {
         // Verifica se o número é válido
         if (isNaN(numero)) {

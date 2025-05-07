@@ -88,7 +88,6 @@ function vincularFilialProduto(idProduto) {
     const formData = new FormData();
     formData.append('funcao', 'vincularFilialProduto');
     formData.append('vincularIdProduto', idProduto);
-    formData.append('vincularIdFilial', 1);
 
     let xhr = new XMLHttpRequest();
     xhr.open("POST", '../../php/funcoes.php', true);
@@ -104,7 +103,6 @@ function desvincularFilialProduto(idProduto) {
     const formData = new FormData();
     formData.append('funcao', 'desvincularFilialProduto');
     formData.append('desvincularIdProduto', idProduto);
-    formData.append('desvincularIdFilial', 1);
     console.log(idProduto);
 
     let xhr = new XMLHttpRequest();
