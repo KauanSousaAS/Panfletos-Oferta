@@ -30,6 +30,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         case 'seletorFilial':
             seletorFilial();
             break;
+        case 'atualizarPreco':
+            atualizarPreco();
+            break;
         default:
             break;
     }
@@ -546,10 +549,10 @@ function seletorFilial()
 
     $sessao = null;
 
-    if(isset($_SESSION['id_filial'])){
+    if (isset($_SESSION['id_filial'])) {
         $sessao = $_SESSION['id_filial'];
     }
-    
+
     $sql = "SELECT f.id_filial, f.filial
     FROM tb_filial f
     WHERE f.status = 1;";
@@ -576,4 +579,197 @@ function seletorFilial()
     ];
 
     echo json_encode($dados);
+}
+
+function atualizarPreco()
+{
+    global $conexao;
+
+    $dadosJson = $_POST['dados'];
+    $dados = json_decode($dadosJson, true); // true para array associativo
+
+    usort($dados, function ($a, $b) {
+        if ($a['quantidade'] != $b['quantidade']) {
+            return $a['quantidade'] - $b['quantidade']; // Primeiro por quantidade
+        }
+        return $a['codigo'] - $b['codigo']; // Depois por código
+    });
+
+    for ($i = 0; $i < count($dados); $i++) {
+        $dadosUpdate = [];
+
+        while (true) {
+            if (isset($dados[$i + 1]) && $dados[$i]['codigo'] == $dados[$i + 1]['codigo']) {
+                $dadosUpdate[] = $dados[$i];
+                $i++;
+            } else {
+                $dadosUpdate[] = $dados[$i];
+                break;
+            }
+        }
+
+        if (count($dadosUpdate) == 1) {
+            $sql = "SELECT p.id_produto 
+                    FROM tb_produto p 
+                    WHERE p.cod_produto = ?;";
+
+            $statement = $conexao->prepare($sql);
+
+            if (!$statement) {
+                throw new Exception("Erro na preparação da consulta: " . $conexao->error);
+            }
+
+            $statement->bind_param("i", $dadosUpdate[0]['codigo']);
+
+            if (!$statement->execute()) {
+                throw new Exception("Erro na execução da consulta: " . $conexao->error);
+            }
+
+            $result = $statement->get_result();
+
+            if (!$result) {
+                throw new Exception("Erro ao obter os resultados da consulta: " . $conexao->error);
+            }
+
+            $dadosProcura = $result->fetch_assoc();
+
+            if (isset($dadosProcura['id_produto'])) {
+
+                // // Captura os novos preços
+                $id = $dadosProcura['id_produto'];
+                $preco = str_replace(",", ".", $dadosUpdate[0]['preco']);
+                $quantidade = $dadosUpdate[0]['quantidade'];
+                $tipoVenda = 1;
+                $uf = "PR";
+
+                // Deleta os preços atuais
+                $sql = "DELETE 
+                        FROM tb_preco
+                        WHERE fk_produto = ?
+                        AND uf = ?;";
+
+                $statement = $conexao->prepare($sql);
+
+                if (!$statement) {
+                    throw new Exception("Erro na preparação da consulta: " . $conexao->error);
+                }
+
+                $statement->bind_param("is", $id, $uf);
+
+                if (!$statement->execute()) {
+                    throw new Exception("Erro na execução da consulta: " . $conexao->error);
+                }
+
+                // Adiciona os novos preços
+                $sql = "INSERT INTO tb_preco(
+                        fk_produto,
+                        valor, 
+                        quantidade, 
+                        tipo_venda, 
+                        uf
+                        ) VALUES (
+                        ?, 
+                        ?, 
+                        ?, 
+                        ?, 
+                        ?
+                        );";
+
+                $statement = $conexao->prepare($sql);
+
+                if (!$statement) {
+                    throw new Exception("Erro na preparação da consulta: " . $conexao->error);
+                }
+
+                $statement->bind_param("idiis", $id, $preco, $quantidade, $tipoVenda, $uf);
+
+                if (!$statement->execute()) {
+                    throw new Exception("Erro na execução da consulta: " . $conexao->error);
+                }
+            }
+        } else {
+            $sql = "SELECT p.id_produto 
+            FROM tb_produto p 
+            WHERE p.cod_produto = ?;";
+
+            $statement = $conexao->prepare($sql);
+
+            if (!$statement) {
+                throw new Exception("Erro na preparação da consulta: " . $conexao->error);
+            }
+
+            $statement->bind_param("i", $dadosUpdate[0]['codigo']);
+
+            if (!$statement->execute()) {
+                throw new Exception("Erro na execução da consulta: " . $conexao->error);
+            }
+
+            $result = $statement->get_result();
+
+            if (!$result) {
+                throw new Exception("Erro ao obter os resultados da consulta: " . $conexao->error);
+            }
+
+            $dadosProcura = $result->fetch_assoc();
+
+            if (isset($dadosProcura['id_produto'])) {
+
+                $id = $dadosProcura['id_produto'];
+                $uf = "PR";
+
+                // Deleta os preços atuais
+                $sql = "DELETE 
+                FROM tb_preco
+                WHERE fk_produto = ?
+                AND uf = ?;";
+
+                $statement = $conexao->prepare($sql);
+
+                if (!$statement) {
+                    throw new Exception("Erro na preparação da consulta: " . $conexao->error);
+                }
+
+                $statement->bind_param("is", $id, $uf);
+
+                if (!$statement->execute()) {
+                    throw new Exception("Erro na execução da consulta: " . $conexao->error);
+                }
+
+                foreach ($dadosUpdate as $produto) {
+
+                    // // Captura os novos preços
+                    $preco = str_replace(",", ".", $produto['preco']);
+                    $quantidade = $produto['quantidade'];
+                    $tipoVenda = 2;
+
+                    // Adiciona os novos preços
+                    $sql = "INSERT INTO tb_preco(
+                    fk_produto,
+                    valor, 
+                    quantidade, 
+                    tipo_venda, 
+                    uf
+                    ) VALUES (
+                    ?, 
+                    ?, 
+                    ?, 
+                    ?, 
+                    ?
+                    );";
+
+                    $statement = $conexao->prepare($sql);
+
+                    if (!$statement) {
+                        throw new Exception("Erro na preparação da consulta: " . $conexao->error);
+                    }
+
+                    $statement->bind_param("idiis", $id, $preco, $quantidade, $tipoVenda, $uf);
+
+                    if (!$statement->execute()) {
+                        throw new Exception("Erro na execução da consulta: " . $conexao->error);
+                    }
+                }
+            }
+        }
+    }
 }

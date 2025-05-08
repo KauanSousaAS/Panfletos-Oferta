@@ -21,8 +21,18 @@ function atualizarPreco() {
         // Convertendo em array de objetos
         const json = XLSX.utils.sheet_to_json(worksheet);
 
-        console.log("Conteúdo da planilha como objeto:", json);
-        alert("Planilha lida com sucesso! Veja o console.");
+        const formData = new FormData();
+        formData.append('funcao', 'atualizarPreco');
+        formData.append('dados', JSON.stringify(json));
+
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", "../../php/funcoes.php", true);
+        xhr.onreadystatechange = function () {
+            if(xhr.readyState == 4 && xhr.status == 200){
+                console.log(xhr.responseText);
+            }
+        }
+        xhr.send(formData);
     };
 
     reader.readAsArrayBuffer(file);
