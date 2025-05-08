@@ -544,8 +544,12 @@ function seletorFilial()
         session_start();
     }
 
-    $sessao = $_SESSION['id_filial'];
+    $sessao = null;
 
+    if(isset($_SESSION['id_filial'])){
+        $sessao = $_SESSION['id_filial'];
+    }
+    
     $sql = "SELECT f.id_filial, f.filial
     FROM tb_filial f
     WHERE f.status = 1;";
