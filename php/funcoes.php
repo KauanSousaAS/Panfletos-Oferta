@@ -589,10 +589,10 @@ function atualizarPreco()
     $dados = json_decode($dadosJson, true); // true para array associativo
 
     usort($dados, function ($a, $b) {
-        if ($a['quantidade'] != $b['quantidade']) {
-            return $a['quantidade'] - $b['quantidade']; // Primeiro por quantidade
+        if ($a['codigo'] != $b['codigo']) {
+            return $a['codigo'] - $b['codigo']; // Ordena primeiro por código
         }
-        return $a['codigo'] - $b['codigo']; // Depois por código
+        return $a['quantidade'] - $b['quantidade']; // Depois por quantidade
     });
 
     for ($i = 0; $i < count($dados); $i++) {
@@ -635,7 +635,7 @@ function atualizarPreco()
 
             if (isset($dadosProcura['id_produto'])) {
 
-                // // Captura os novos preços
+                // Captura os novos preços
                 $id = $dadosProcura['id_produto'];
                 $preco = str_replace(",", ".", $dadosUpdate[0]['preco']);
                 $quantidade = $dadosUpdate[0]['quantidade'];
@@ -686,11 +686,36 @@ function atualizarPreco()
                 if (!$statement->execute()) {
                     throw new Exception("Erro na execução da consulta: " . $conexao->error);
                 }
+
+                // Alterar status do vinculo de filial_produto para "PENDENTE - int:(2)"
+
+                // =================================================================================
+                // Agora só altera os preços do Paraná, mas precisa que a função identifique qual
+                // estado terá ajuste de preços e selecionar o status pendente somente para o estado
+                // que foi selecionado.
+                // =================================================================================
+                $sql = "UPDATE filial_produto 
+                        SET status = 2 
+                        WHERE fk_produto = ?
+                        AND
+                        (fk_filial = 1 OR fk_filial = 2 OR fk_filial = 3);";
+
+                $statement = $conexao->prepare($sql);
+
+                if (!$statement) {
+                    throw new Exception("Erro na preparação da consulta: " . $conexao->error);
+                }
+
+                $statement->bind_param("i", $id);
+
+                if (!$statement->execute()) {
+                    throw new Exception("Erro na execução da consulta: " . $conexao->error);
+                }
             }
         } else {
             $sql = "SELECT p.id_produto 
-            FROM tb_produto p 
-            WHERE p.cod_produto = ?;";
+                    FROM tb_produto p 
+                    WHERE p.cod_produto = ?;";
 
             $statement = $conexao->prepare($sql);
 
@@ -719,9 +744,9 @@ function atualizarPreco()
 
                 // Deleta os preços atuais
                 $sql = "DELETE 
-                FROM tb_preco
-                WHERE fk_produto = ?
-                AND uf = ?;";
+                        FROM tb_preco
+                        WHERE fk_produto = ?
+                        AND uf = ?;";
 
                 $statement = $conexao->prepare($sql);
 
@@ -743,19 +768,10 @@ function atualizarPreco()
                     $tipoVenda = 2;
 
                     // Adiciona os novos preços
-                    $sql = "INSERT INTO tb_preco(
-                    fk_produto,
-                    valor, 
-                    quantidade, 
-                    tipo_venda, 
-                    uf
-                    ) VALUES (
-                    ?, 
-                    ?, 
-                    ?, 
-                    ?, 
-                    ?
-                    );";
+                    $sql = "INSERT INTO tb_preco
+                            (fk_produto, valor, quantidade, tipo_venda, uf) 
+                            VALUES 
+                            (?, ?, ?, ?, ?);";
 
                     $statement = $conexao->prepare($sql);
 
@@ -768,6 +784,31 @@ function atualizarPreco()
                     if (!$statement->execute()) {
                         throw new Exception("Erro na execução da consulta: " . $conexao->error);
                     }
+                }
+
+                // Alterar status do vinculo de filial_produto para "PENDENTE - int:(2)"
+
+                // =================================================================================
+                // Agora só altera os preços do Paraná, mas precisa que a função identifique qual
+                // estado terá ajuste de preços e selecionar o status pendente somente para o estado
+                // que foi selecionado.
+                // =================================================================================
+                $sql = "UPDATE filial_produto 
+                        SET status = 2 
+                        WHERE fk_produto = ?
+                        AND
+                        (fk_filial = 1 OR fk_filial = 2 OR fk_filial = 3);";
+
+                $statement = $conexao->prepare($sql);
+
+                if (!$statement) {
+                    throw new Exception("Erro na preparação da consulta: " . $conexao->error);
+                }
+
+                $statement->bind_param("i", $id);
+
+                if (!$statement->execute()) {
+                    throw new Exception("Erro na execução da consulta: " . $conexao->error);
                 }
             }
         }
