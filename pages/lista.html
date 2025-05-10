@@ -17,14 +17,21 @@
         </div>
         
         <table id="tabelaProdutosFilial">
-            <tr>
-                <th>Produto</th>
-                <th>Ações</th>
-            </tr>
         </table>
         <button type="button" onclick="window.location.href='../index.html'">Voltar</button>
-        <button type="button" onclick="window.location.href='#'">Confirmar Pendentes</button>
-        <button type="button" onclick="window.location.href='#'">Exibir Selecionados</button>
+        <button type="button" onclick="window.location.href='#'">Selecionar</button>
+        <select name="" id="">
+            <option selected> -- sem seleção -- </option>
+            <option value="">Pendentes</option>
+            <option value="">Todos</option>
+        </select>
+        <button type="button" onclick="window.location.href='#'">Executar</button>
+        <select name="" id="">
+            <option selected> -- sem ação -- </option>
+            <option value="">Exibir</option>
+            <option value="">Concluir</option>
+            <option value="">Retirar</option>
+        </select>
     </form>
 
     <script src="../assets/js/lista.js"></script>

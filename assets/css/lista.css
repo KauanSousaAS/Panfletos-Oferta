@@ -28,6 +28,7 @@ table{
     max-height: 300px;
     overflow: auto;
     border-radius: 10px;
+    text-align: left;
 }
 
 #dropdown {

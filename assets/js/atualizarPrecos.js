@@ -24,11 +24,12 @@ function atualizarPreco() {
         const formData = new FormData();
         formData.append('funcao', 'atualizarPreco');
         formData.append('dados', JSON.stringify(json));
+        formData.append('ufAtualizarPreco', document.getElementById('ufAtualizarPreco').value);
 
         let xhr = new XMLHttpRequest();
         xhr.open("POST", "../../php/funcoes.php", true);
         xhr.onreadystatechange = function () {
-            if(xhr.readyState == 4 && xhr.status == 200){
+            if (xhr.readyState == 4 && xhr.status == 200) {
                 console.log(xhr.responseText);
             }
         }

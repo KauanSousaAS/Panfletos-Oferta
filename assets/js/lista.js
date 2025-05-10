@@ -10,27 +10,66 @@ function loadData() {
 
             let dadosProduto = JSON.parse(xhr.responseText);
             let tabela = document.getElementById('tabelaProdutosFilial');
+            let cabecalho = document.createElement('thead');
+            let linhaHead = document.createElement('tr');
+            let corpo = document.createElement('tbody');
+
+            let idHead = document.createElement('th');
+            let codigoHead = document.createElement('th');
+            let descricaoHead = document.createElement('th');
+            let statusHead = document.createElement('th');
+
+            idHead.innerHTML = "";
+            codigoHead.innerHTML = "Código";
+            descricaoHead.innerHTML = "Descrição";
+            statusHead.innerHTML = "Status";
+
+            linhaHead.append(idHead);
+            linhaHead.append(codigoHead);
+            linhaHead.append(descricaoHead);
+            linhaHead.append(statusHead);
+
+            cabecalho.append(linhaHead);
+
+            tabela.append(cabecalho);
 
             for (let x = 0; x < dadosProduto.length; x++) {
-                let linha = document.createElement('tr');
-                let descricaoProduto = document.createElement('td');
-                let acoes = document.createElement('td');
-                let botao = document.createElement('button');
+                let linhaBody = document.createElement('tr');
 
-                descricaoProduto.innerHTML = dadosProduto[x].cod_produto + " - " + dadosProduto[x].desc_produto;
-                linha.appendChild(descricaoProduto);
+                let idBody = document.createElement('td');
+                let codigoBody = document.createElement('td');
+                let descricaoBody = document.createElement('td');
+                let statusBody = document.createElement('td');
+                
+                let checkbox = document.createElement('input');
+                checkbox.type = 'checkbox'; // ou 'radio'
+                checkbox.id = 'produtoSelecionado';
+                checkbox.name = 'produtoSelecionado';
+                checkbox.value = dadosProduto[x].id_produto;
+                idBody.appendChild(checkbox);
 
-                botao.textContent = 'X';
-                botao.type = 'button';
-                let idProdutoA = dadosProduto[x].id_produto;
-                botao.onclick = function () {
-                    desvincularFilialProduto(idProdutoA);
-                };
-                acoes.appendChild(botao);
-                linha.appendChild(acoes);
+                codigoBody.innerHTML = dadosProduto[x].cod_produto;
+                descricaoBody.innerHTML = dadosProduto[x].desc_produto;
+                
+                if (dadosProduto[x].status == 0) {
+                    statusBody.innerHTML = "Desativo";
+                } else if (dadosProduto[x].status == 1) {
+                    statusBody.innerHTML = "Ativo";
+                } else if (dadosProduto[x].status == 2) {
+                    statusBody.innerHTML = "Pendênte";
+                }
 
-                tabela.appendChild(linha);
+                linhaBody.appendChild(idBody);
+                linhaBody.appendChild(codigoBody);
+                linhaBody.appendChild(descricaoBody);
+                linhaBody.appendChild(statusBody);
+
+                corpo.appendChild(linhaBody);
+
             }
+            tabela.appendChild(corpo);
+
+            console.log(tabela);
         }
     }
     xhr.send(formData);

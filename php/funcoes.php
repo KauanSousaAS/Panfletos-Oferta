@@ -383,15 +383,14 @@ function listarProdutoFilial()
 
     $sessao = $_SESSION['id_filial'];
 
-    $sql = "SELECT p.id_produto, p.cod_produto, p.desc_produto
-                FROM tb_filial f
-                JOIN filial_produto pf ON f.id_filial = pf.fk_filial
-                JOIN tb_produto p ON p.id_produto = pf.fk_produto
-                WHERE f.id_filial = ?
-                AND p.status = 1
-                AND pf.status = 1
-                ORDER BY p.desc_produto ASC
-                ;";
+    $sql = "SELECT p.id_produto, p.cod_produto, p.desc_produto, p.status
+            FROM tb_filial f
+            JOIN filial_produto pf ON f.id_filial = pf.fk_filial
+            JOIN tb_produto p ON p.id_produto = pf.fk_produto
+            WHERE f.id_filial = ?
+            AND p.status = 1
+            AND (pf.status = 1 OR pf.status = 2)
+            ORDER BY p.desc_produto ASC;";
 
     $statement = $conexao->prepare($sql);
 
@@ -436,15 +435,8 @@ function pesquisarProdutoFilial()
                 WHERE pf.fk_produto = p.id_produto 
                 AND pf.fk_filial = ?
                 )
-                AND
-                (
-                p.cod_produto LIKE ?
-                OR
-                p.desc_produto LIKE ?
-                )
-                AND
-                p.status = 1
-                ;";
+                AND (p.cod_produto LIKE ? OR p.desc_produto LIKE ?)
+                AND p.status = 1;";
 
     $statement = $conexao->prepare($sql);
 
@@ -640,7 +632,7 @@ function atualizarPreco()
                 $preco = str_replace(",", ".", $dadosUpdate[0]['preco']);
                 $quantidade = $dadosUpdate[0]['quantidade'];
                 $tipoVenda = 1;
-                $uf = "PR";
+                $uf = $_POST['ufAtualizarPreco'];
 
                 // Deleta os preços atuais
                 $sql = "DELETE 
@@ -690,15 +682,22 @@ function atualizarPreco()
                 // Alterar status do vinculo de filial_produto para "PENDENTE - int:(2)"
 
                 // =================================================================================
-                // Agora só altera os preços do Paraná, mas precisa que a função identifique qual
-                // estado terá ajuste de preços e selecionar o status pendente somente para o estado
-                // que foi selecionado.
+                // Codigo precisa ser corrigido para caso seja adicionado mais filiais, ainda é
+                // limitada trazendo suporte somente as filiais "CP", "RD", "MX", "NV" e "NA".
                 // =================================================================================
-                $sql = "UPDATE filial_produto 
+                if ($uf == "PR") {
+                    $sql = "UPDATE filial_produto 
                         SET status = 2 
                         WHERE fk_produto = ?
                         AND
                         (fk_filial = 1 OR fk_filial = 2 OR fk_filial = 3);";
+                } else {
+                    $sql = "UPDATE filial_produto 
+                        SET status = 2 
+                        WHERE fk_produto = ?
+                        AND
+                        (fk_filial = 4 OR fk_filial = 5);";
+                }
 
                 $statement = $conexao->prepare($sql);
 
@@ -740,7 +739,7 @@ function atualizarPreco()
             if (isset($dadosProcura['id_produto'])) {
 
                 $id = $dadosProcura['id_produto'];
-                $uf = "PR";
+                $uf = $_POST['ufAtualizarPreco'];
 
                 // Deleta os preços atuais
                 $sql = "DELETE 
@@ -789,15 +788,23 @@ function atualizarPreco()
                 // Alterar status do vinculo de filial_produto para "PENDENTE - int:(2)"
 
                 // =================================================================================
-                // Agora só altera os preços do Paraná, mas precisa que a função identifique qual
-                // estado terá ajuste de preços e selecionar o status pendente somente para o estado
-                // que foi selecionado.
+                // Codigo precisa ser corrigido para caso seja adicionado mais filiais, ainda é
+                // limitada trazendo suporte somente as filiais "CP", "RD", "MX", "NV" e "NA".
                 // =================================================================================
-                $sql = "UPDATE filial_produto 
+                if ($uf == "PR") {
+                    $sql = "UPDATE filial_produto 
                         SET status = 2 
                         WHERE fk_produto = ?
                         AND
                         (fk_filial = 1 OR fk_filial = 2 OR fk_filial = 3);";
+                } else {
+                    $sql = "UPDATE filial_produto 
+                        SET status = 2 
+                        WHERE fk_produto = ?
+                        AND
+                        (fk_filial = 4 OR fk_filial = 5);";
+                }
+
 
                 $statement = $conexao->prepare($sql);
 
