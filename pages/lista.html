@@ -1,39 +1,42 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panfletos de Oferta - Lista para filial</title>
     <link rel="stylesheet" href="../assets/css/lista.css">
 </head>
+
 <body>
     <h1>Panfletos de Oferta - Lista para filial</h1>
 
     <form>
-        <input autocomplete="off" type="text" name="pesquisa" id="pesquisa" onkeyup="pesquisarProduto(document.getElementById('pesquisa'));">
-        
+        <input autocomplete="off" type="text" name="pesquisa" id="pesquisa"
+            onkeyup="pesquisarProduto(document.getElementById('pesquisa'));">
+
         <div id="dropdown" class="dropdown-content">
-            
+
         </div>
-        
+
         <table id="tabelaProdutosFilial">
         </table>
         <button type="button" onclick="window.location.href='../index.html'">Voltar</button>
-        <button type="button" onclick="window.location.href='#'">Selecionar</button>
-        <select name="" id="">
+        <select name="selecao" id="selecao">
             <option selected> -- sem seleção -- </option>
-            <option value="">Pendentes</option>
-            <option value="">Todos</option>
+            <option value="1">Todos</option>
+            <option value="2">Pendêntes</option>
         </select>
-        <button type="button" onclick="window.location.href='#'">Executar</button>
-        <select name="" id="">
+        <select name="acao" id="acao">
             <option selected> -- sem ação -- </option>
-            <option value="">Exibir</option>
-            <option value="">Concluir</option>
-            <option value="">Retirar</option>
+            <option value="1">Exibir</option>
+            <option value="2">Concluir</option>
+            <option value="3">Retirar</option>
         </select>
+        <button type="button" onclick="acoesExecutar(document.getElementById('acao').value);">Executar</button>
     </form>
 
     <script src="../assets/js/lista.js"></script>
 </body>
+
 </html>

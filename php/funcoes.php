@@ -383,7 +383,7 @@ function listarProdutoFilial()
 
     $sessao = $_SESSION['id_filial'];
 
-    $sql = "SELECT p.id_produto, p.cod_produto, p.desc_produto, p.status
+    $sql = "SELECT p.id_produto, p.cod_produto, p.desc_produto, pf.status
             FROM tb_filial f
             JOIN filial_produto pf ON f.id_filial = pf.fk_filial
             JOIN tb_produto p ON p.id_produto = pf.fk_produto

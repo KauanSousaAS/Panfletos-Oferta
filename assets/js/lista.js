@@ -40,7 +40,7 @@ function loadData() {
                 let codigoBody = document.createElement('td');
                 let descricaoBody = document.createElement('td');
                 let statusBody = document.createElement('td');
-                
+
                 let checkbox = document.createElement('input');
                 checkbox.type = 'checkbox'; // ou 'radio'
                 checkbox.id = 'produtoSelecionado';
@@ -50,7 +50,9 @@ function loadData() {
 
                 codigoBody.innerHTML = dadosProduto[x].cod_produto;
                 descricaoBody.innerHTML = dadosProduto[x].desc_produto;
-                
+
+                statusBody.innerHTML = dadosProduto[x].status;
+
                 if (dadosProduto[x].status == 0) {
                     statusBody.innerHTML = "Desativo";
                 } else if (dadosProduto[x].status == 1) {
@@ -68,8 +70,6 @@ function loadData() {
 
             }
             tabela.appendChild(corpo);
-
-            console.log(tabela);
         }
     }
     xhr.send(formData);
@@ -152,6 +152,90 @@ function desvincularFilialProduto(idProduto) {
         }
     }
     xhr.send(formData);
+}
+
+document.getElementById("selecao").addEventListener("change", function () {
+    let tabela = document.getElementById('tabelaProdutosFilial');
+    let selecao = this.value;
+    switch (parseInt(selecao)) {
+        case 1:
+            tabela = marcarCheckbox(tabela, 1);
+            break;
+        case 2:
+            tabela = marcarCheckbox(tabela, 2);
+            break;
+        default:
+            tabela = marcarCheckbox(tabela, 0);
+            break;
+    }
+});
+
+// function selecaoSelecionar(selecao) {
+//     let tabela = document.getElementById('tabelaProdutosFilial');
+//     switch (parseInt(selecao)) {
+//         case 1:
+//             tabela = marcarCheckbox(tabela, 1);
+//             break;
+//         case 2:
+//             tabela = marcarCheckbox(tabela, 2);
+//             break;
+//         default:
+//             tabela = marcarCheckbox(tabela, 0);
+//             break;
+//     }
+// }
+
+function acoesExecutar(acao) {
+    switch (parseInt(acao)) {
+        case 1:
+            console.log("Exibir");
+            break;
+        case 2:
+            console.log("Concluir");
+            break;
+        case 3:
+            console.log("Retirar");
+            break;
+    }
+}
+
+function marcarCheckbox(tabela, ondeSelecionar) {
+    let linhas = tabela.getElementsByTagName('tr');
+
+    // Pula a primeira linha (cabeçalho)
+    for (let i = 1; i < linhas.length; i++) {
+        let celulas = linhas[i].getElementsByTagName('td');
+        if (celulas.length < 4) continue; // garante que há colunas suficientes
+
+        let statusTexto = celulas[3].innerText.trim(); // Status geralmente está na 4ª coluna (índice 3)
+
+        if (ondeSelecionar == 0) {
+            let checkbox = celulas[0].querySelector('input[type="checkbox"]');
+            if (checkbox) {
+                checkbox.checked = false;
+            }
+
+        } else if (ondeSelecionar == 1) {
+            let checkbox = celulas[0].querySelector('input[type="checkbox"]');
+            if (checkbox) {
+                checkbox.checked = true;
+            }
+        } else if (ondeSelecionar == 2) {
+            if (statusTexto === "Pendênte") {
+                let checkbox = celulas[0].querySelector('input[type="checkbox"]');
+                if (checkbox) {
+                    checkbox.checked = true;
+                }
+            } else {
+                let checkbox = celulas[0].querySelector('input[type="checkbox"]');
+                if (checkbox) {
+                    checkbox.checked = false;
+                }
+            }
+        }
+    }
+
+    return tabela;
 }
 
 loadData();
