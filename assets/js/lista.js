@@ -19,6 +19,8 @@ function loadData() {
             let descricaoHead = document.createElement('th');
             let statusHead = document.createElement('th');
 
+            tabela.innerHTML = "";
+
             idHead.innerHTML = "";
             codigoHead.innerHTML = "Código";
             descricaoHead.innerHTML = "Descrição";
@@ -42,8 +44,8 @@ function loadData() {
                 let statusBody = document.createElement('td');
 
                 let checkbox = document.createElement('input');
-                checkbox.type = 'checkbox'; // ou 'radio'
-                checkbox.id = 'produtoSelecionado';
+                checkbox.type = 'checkbox';
+                checkbox.className = 'produtoSelecionado';
                 checkbox.name = 'produtoSelecionado';
                 checkbox.value = dadosProduto[x].id_produto;
                 idBody.appendChild(checkbox);
@@ -138,22 +140,6 @@ function vincularFilialProduto(idProduto) {
     xhr.send(formData);
 }
 
-function desvincularFilialProduto(idProduto) {
-    const formData = new FormData();
-    formData.append('funcao', 'desvincularFilialProduto');
-    formData.append('desvincularIdProduto', idProduto);
-    console.log(idProduto);
-
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", '../../php/funcoes.php', true);
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            window.location.href = 'lista.html';
-        }
-    }
-    xhr.send(formData);
-}
-
 document.getElementById("selecao").addEventListener("change", function () {
     let tabela = document.getElementById('tabelaProdutosFilial');
     let selecao = this.value;
@@ -169,35 +155,6 @@ document.getElementById("selecao").addEventListener("change", function () {
             break;
     }
 });
-
-// function selecaoSelecionar(selecao) {
-//     let tabela = document.getElementById('tabelaProdutosFilial');
-//     switch (parseInt(selecao)) {
-//         case 1:
-//             tabela = marcarCheckbox(tabela, 1);
-//             break;
-//         case 2:
-//             tabela = marcarCheckbox(tabela, 2);
-//             break;
-//         default:
-//             tabela = marcarCheckbox(tabela, 0);
-//             break;
-//     }
-// }
-
-function acoesExecutar(acao) {
-    switch (parseInt(acao)) {
-        case 1:
-            console.log("Exibir");
-            break;
-        case 2:
-            console.log("Concluir");
-            break;
-        case 3:
-            console.log("Retirar");
-            break;
-    }
-}
 
 function marcarCheckbox(tabela, ondeSelecionar) {
     let linhas = tabela.getElementsByTagName('tr');
@@ -236,6 +193,52 @@ function marcarCheckbox(tabela, ondeSelecionar) {
     }
 
     return tabela;
+}
+
+function acoesExecutar(acao) {
+    const checkboxes = document.querySelectorAll('.produtoSelecionado:checked');
+    const ids = Array.from(checkboxes).map(cb => cb.value);
+
+    switch (acao) {
+        case "exibir":
+            const novaJanela = window.open('../pages/exibir.html', '_blank');
+
+            // Aguarda a nova aba carregar completamente
+            novaJanela.onload = function () {
+                novaJanela.postMessage({
+                    ids: ids
+                }, '*');
+            };
+            break;
+        case "concluir":
+            const formDataConcluir = new FormData();
+            formDataConcluir.append('funcao', 'concluirAssociacaoProdutoFilial');
+            formDataConcluir.append('ids', JSON.stringify(ids));
+
+            let xhrConcluir = new XMLHttpRequest();
+            xhrConcluir.open("POST", '../../php/funcoes.php', true);
+            xhrConcluir.onreadystatechange = function () {
+                if (xhrConcluir.readyState == 4 && xhrConcluir.status == 200) {
+                    loadData();
+                }
+            }
+            xhrConcluir.send(formDataConcluir);
+            break;
+        case "excluir":
+            const formDataExcluir = new FormData();
+            formDataExcluir.append('funcao', 'desvincularFilialProduto');
+            formDataExcluir.append('ids', JSON.stringify(ids));
+
+            let xhrExcluir = new XMLHttpRequest();
+            xhrExcluir.open("POST", '../../php/funcoes.php', true);
+            xhrExcluir.onreadystatechange = function () {
+                if (xhrExcluir.readyState == 4 && xhrExcluir.status == 200) {
+                    loadData();
+                }
+            }
+            xhrExcluir.send(formDataExcluir);
+            break;
+    }
 }
 
 loadData();

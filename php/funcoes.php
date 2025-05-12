@@ -33,55 +33,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         case 'atualizarPreco':
             atualizarPreco();
             break;
+        case 'acoesExecutar':
+            acoesExecutar();
+            break;
+        case 'concluirAssociacaoProdutoFilial':
+            concluirAssociacaoProdutoFilial();
+            break;
         default:
             break;
     }
-}
-
-function exibirPanfleto()
-{
-    global $conexao;
-
-    if (!isset($_SESSION)) {
-        session_start();
-    }
-
-    $sessao = $_SESSION['id_filial'];
-
-    $sql = "SELECT p.cod_produto, p.desc_produto, p.tipo_produto, pr.tipo_venda, pr.valor, pr.quantidade
-                FROM tb_filial f
-                JOIN filial_produto pf ON f.id_filial = pf.fk_filial
-                JOIN tb_produto p ON p.id_produto = pf.fk_produto
-                JOIN tb_preco pr ON p.id_produto = pr.fk_produto
-                WHERE f.id_filial = ?
-                AND pr.uf = f.uf
-                AND p.status = 1
-                AND pr.status = 1
-                AND pf.status = 1
-                ORDER BY p.desc_produto ASC, pr.quantidade ASC
-                ;";
-
-    $statement = $conexao->prepare($sql);
-
-    if (!$statement) {
-        throw new Exception("Erro na preparação da consulta: " . $conexao->error);
-    }
-
-    $statement->bind_param("i", $sessao);
-
-    if (!$statement->execute()) {
-        throw new Exception("Erro na execução da consulta: " . $conexao->error);
-    }
-
-    $result = $statement->get_result();
-
-    if (!$result) {
-        throw new Exception("Erro ao obter os resultados da consulta: " . $conexao->error);
-    }
-
-    $dados = $result->fetch_all(MYSQLI_ASSOC);
-
-    echo json_encode($dados);
 }
 
 function cadastrarProduto()
@@ -473,42 +433,15 @@ function vincularFilialProduto()
     $sessao = $_SESSION['id_filial'];
 
 
-    $sql = "INSERT INTO `filial_produto` (
-            `fk_produto`,
-            `fk_filial`
+    $sql = "INSERT INTO filial_produto (
+            fk_produto,
+            fk_filial,
+            status
             )VALUES(
             ?,
-            ?
+            ?,
+            2
             );";
-
-    $statement = $conexao->prepare($sql);
-
-    if (!$statement) {
-        throw new Exception("Erro na preparação da consulta: " . $conexao->error);
-    }
-
-    $statement->bind_param("ss", $idProduto, $sessao);
-
-    if (!$statement->execute()) {
-        throw new Exception("Erro na execução da consulta: " . $conexao->error);
-    }
-}
-
-function desvincularFilialProduto()
-{
-    global $conexao;
-
-    if (!isset($_SESSION)) {
-        session_start();
-    }
-
-    $idProduto = $_POST['desvincularIdProduto'];
-    $sessao = $_SESSION['id_filial'];
-
-    $sql = "DELETE FROM filial_produto
-            WHERE fk_produto = ? 
-            AND fk_filial = ?
-            ;";
 
     $statement = $conexao->prepare($sql);
 
@@ -819,5 +752,162 @@ function atualizarPreco()
                 }
             }
         }
+    }
+}
+
+function acoesExecutar()
+{
+    $dadosJson = $_POST['ids'];
+    $dados = json_decode($dadosJson, true); // true para array associativo
+    $acao = $_POST['acao'];
+
+    switch ($acao) {
+        case "exibir":
+            exibirPanfleto($dados);
+            break;
+        case "concluir":
+            echo "Função concluir com os dados:\n";
+            var_dump($dados);
+            break;
+        case "excluir":
+            echo "Função excluir com os dados:\n";
+            var_dump($dados);
+            break;
+    }
+}
+
+function exibirPanfleto()
+{
+    global $conexao;
+
+    if (!isset($_SESSION)) {
+        session_start();
+    }
+
+    $sessao = $_SESSION['id_filial'];
+    $ids = json_decode($_POST['ids'], true);
+    $idsArray =  $ids['ids'];
+
+    // Cria os placeholders (?, ?, ?) conforme o número de produtos
+    $placeholders = implode(',', array_fill(0, count($idsArray), '?'));
+    $tipos = str_repeat('i', count($idsArray) + 1); // 'i' para id_filial + cada id_produto
+
+
+    $sql = "SELECT p.cod_produto, p.desc_produto, p.tipo_produto, pr.tipo_venda, pr.valor, pr.quantidade
+                FROM tb_filial f
+                JOIN filial_produto pf ON f.id_filial = pf.fk_filial
+                JOIN tb_produto p ON p.id_produto = pf.fk_produto
+                JOIN tb_preco pr ON p.id_produto = pr.fk_produto
+                WHERE f.id_filial = ?
+                AND pr.uf = f.uf
+                AND p.status = 1
+                AND pr.status = 1
+                AND p.id_produto IN ($placeholders)
+                ORDER BY p.desc_produto ASC, pr.quantidade ASC
+                ;";
+
+    $statement = $conexao->prepare($sql);
+
+    if (!$statement) {
+        throw new Exception("Erro na preparação da consulta: " . $conexao->error);
+    }
+
+    // Junta id da filial com os IDs dos produtos
+    $params = array_merge([$sessao], $idsArray);
+
+    // Usa bind_param com argumentos variáveis
+    $statement->bind_param($tipos, ...$params);
+
+    if (!$statement->execute()) {
+        throw new Exception("Erro na execução da consulta: " . $conexao->error);
+    }
+
+    $result = $statement->get_result();
+
+    if (!$result) {
+        throw new Exception("Erro ao obter os resultados da consulta: " . $conexao->error);
+    }
+
+    $dados = $result->fetch_all(MYSQLI_ASSOC);
+
+    echo json_encode($dados);
+}
+
+function concluirAssociacaoProdutoFilial()
+{
+    global $conexao;
+
+    if (!isset($_SESSION)) {
+        session_start();
+    }
+
+    $sessao = [$_SESSION['id_filial']];
+    $ids = json_decode($_POST['ids'], true);
+
+    // var_dump($sessao, $ids);
+
+    // Cria os placeholders (?, ?, ?) conforme o número de produtos
+    $placeholders = implode(',', array_fill(0, count($ids), '?'));
+    $tipos = str_repeat('i', count($ids) + 1); // 'i' para id_filial + cada id_produto
+
+
+    $sql = "UPDATE filial_produto 
+            SET status = 1 
+            WHERE fk_filial = ?
+            AND status = 2 
+            AND fk_produto IN ($placeholders);";
+
+    $statement = $conexao->prepare($sql);
+
+    if (!$statement) {
+        throw new Exception("Erro na preparação da consulta: " . $conexao->error);
+    }
+
+    // Junta id da filial com os IDs dos produtos
+    $params = array_merge([$sessao], $ids);
+
+    // Usa bind_param com argumentos variáveis
+    $statement->bind_param($tipos, ...$params);
+
+    if (!$statement->execute()) {
+        throw new Exception("Erro na execução da consulta: " . $conexao->error);
+    }
+}
+
+function desvincularFilialProduto()
+{
+    global $conexao;
+
+    if (!isset($_SESSION)) {
+        session_start();
+    }
+
+    $sessao = [$_SESSION['id_filial']];
+    $ids = json_decode($_POST['ids'], true);
+
+    // var_dump($sessao, $ids);
+
+    // Cria os placeholders (?, ?, ?) conforme o número de produtos
+    $placeholders = implode(',', array_fill(0, count($ids), '?'));
+    $tipos = str_repeat('i', count($ids) + 1); // 'i' para id_filial + cada id_produto
+
+    $sql = "DELETE FROM filial_produto
+            WHERE fk_filial = ? 
+            AND fk_produto IN ($placeholders);";
+
+    $statement = $conexao->prepare($sql);
+
+    if (!$statement) {
+        throw new Exception("Erro na preparação da consulta: " . $conexao->error);
+    }
+
+    // Junta id da filial com os IDs dos produtos
+    $params = array_merge([$sessao], $ids);
+
+    // Usa bind_param com argumentos variáveis
+    $statement->bind_param($tipos, ...$params);
+
+    if (!$statement->execute()) {
+        throw new Exception("Erro na execução da consulta: " . $conexao->error);
     }
 }

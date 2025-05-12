@@ -1,8 +1,12 @@
-function loadData() {
+window.addEventListener('message', function (event) {
+
+    const ids = event.data;
+
 
     // Define qual função será chamada
     const formData = new FormData();
     formData.append('funcao', 'exibirPanfleto');
+    formData.append('ids', JSON.stringify(ids));
 
     // Gera a requisição para ao servidor para captar os dados dos panfletos
     let xhr = new XMLHttpRequest();
@@ -468,6 +472,5 @@ function loadData() {
 
         return numero;
     }
-}
+});
 
-loadData();
