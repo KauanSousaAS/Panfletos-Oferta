@@ -220,6 +220,7 @@ function acoesExecutar(acao) {
             xhrConcluir.onreadystatechange = function () {
                 if (xhrConcluir.readyState == 4 && xhrConcluir.status == 200) {
                     loadData();
+                    console.log(xhrConcluir.responseText);
                 }
             }
             xhrConcluir.send(formDataConcluir);
@@ -234,6 +235,7 @@ function acoesExecutar(acao) {
             xhrExcluir.onreadystatechange = function () {
                 if (xhrExcluir.readyState == 4 && xhrExcluir.status == 200) {
                     loadData();
+                    console.log(xhrExcluir.responseText);
                 }
             }
             xhrExcluir.send(formDataExcluir);

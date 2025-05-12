@@ -841,7 +841,7 @@ function concluirAssociacaoProdutoFilial()
         session_start();
     }
 
-    $sessao = [$_SESSION['id_filial']];
+    $sessao = $_SESSION['id_filial'];
     $ids = json_decode($_POST['ids'], true);
 
     // var_dump($sessao, $ids);
@@ -882,7 +882,7 @@ function desvincularFilialProduto()
         session_start();
     }
 
-    $sessao = [$_SESSION['id_filial']];
+    $sessao = $_SESSION['id_filial'];
     $ids = json_decode($_POST['ids'], true);
 
     // var_dump($sessao, $ids);
