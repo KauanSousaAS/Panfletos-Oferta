@@ -534,6 +534,22 @@ function atualizarPreco()
         }
 
         if (count($dadosUpdate) == 1) {
+
+            $vaiAlterar = false;
+
+            foreach ($dadosUpdate as $produto) {
+                $diferenca = floatval($produto['porc']);
+                if ($diferenca == 0) {
+                }else{
+                    $vaiAlterar = true;
+                    break;
+                }
+            }
+
+            if ($vaiAlterar == false) {
+                continue;
+            }
+
             $sql = "SELECT p.id_produto 
                     FROM tb_produto p 
                     WHERE p.cod_produto = ?;";
@@ -645,6 +661,21 @@ function atualizarPreco()
                 }
             }
         } else {
+
+            $vaiAlterar = false;
+
+            foreach ($dadosUpdate as $produto) {
+                $diferenca = floatval($produto['porc']);
+                if ($diferenca != 0) {
+                    $vaiAlterar = true;
+                    break;
+                }
+            }
+
+            if ($vaiAlterar == false) {
+                continue;
+            }
+
             $sql = "SELECT p.id_produto 
                     FROM tb_produto p 
                     WHERE p.cod_produto = ?;";
