@@ -535,59 +535,21 @@ function atualizarPreco()
 
         if (count($dadosUpdate) == 1) {
 
-            $vaiAlterar = false;
+            $vaiAlterarProduto = false;
 
-            foreach ($dadosUpdate as $produto) {
-                $diferenca = floatval($produto['porc']);
-                if ($diferenca == 0) {
-                }else{
-                    $vaiAlterar = true;
-                    break;
+            foreach ($dadosUpdate as $produtoConferir) {
+                $diferencaPorcentagem = floatval(str_replace(",", ".", $produtoConferir['porc']));
+                echo "$diferencaPorcentagem\n";
+                echo ($diferencaPorcentagem != 0.0), "\n";
+                if ($diferencaPorcentagem != 0.0) {
+                    $vaiAlterarProduto = true;
                 }
             }
 
-            if ($vaiAlterar == false) {
-                continue;
-            }
-
-            $sql = "SELECT p.id_produto 
+            if ($vaiAlterarProduto == true) {
+                $sql = "SELECT p.id_produto 
                     FROM tb_produto p 
                     WHERE p.cod_produto = ?;";
-
-            $statement = $conexao->prepare($sql);
-
-            if (!$statement) {
-                throw new Exception("Erro na preparação da consulta: " . $conexao->error);
-            }
-
-            $statement->bind_param("i", $dadosUpdate[0]['codigo']);
-
-            if (!$statement->execute()) {
-                throw new Exception("Erro na execução da consulta: " . $conexao->error);
-            }
-
-            $result = $statement->get_result();
-
-            if (!$result) {
-                throw new Exception("Erro ao obter os resultados da consulta: " . $conexao->error);
-            }
-
-            $dadosProcura = $result->fetch_assoc();
-
-            if (isset($dadosProcura['id_produto'])) {
-
-                // Captura os novos preços
-                $id = $dadosProcura['id_produto'];
-                $preco = str_replace(",", ".", $dadosUpdate[0]['preco']);
-                $quantidade = $dadosUpdate[0]['quantidade'];
-                $tipoVenda = 1;
-                $uf = $_POST['ufAtualizarPreco'];
-
-                // Deleta os preços atuais
-                $sql = "DELETE 
-                        FROM tb_preco
-                        WHERE fk_produto = ?
-                        AND uf = ?;";
 
                 $statement = $conexao->prepare($sql);
 
@@ -595,14 +557,49 @@ function atualizarPreco()
                     throw new Exception("Erro na preparação da consulta: " . $conexao->error);
                 }
 
-                $statement->bind_param("is", $id, $uf);
+                $statement->bind_param("i", $dadosUpdate[0]['codigo']);
 
                 if (!$statement->execute()) {
                     throw new Exception("Erro na execução da consulta: " . $conexao->error);
                 }
 
-                // Adiciona os novos preços
-                $sql = "INSERT INTO tb_preco(
+                $result = $statement->get_result();
+
+                if (!$result) {
+                    throw new Exception("Erro ao obter os resultados da consulta: " . $conexao->error);
+                }
+
+                $dadosProcura = $result->fetch_assoc();
+
+                if (isset($dadosProcura['id_produto'])) {
+
+                    // Captura os novos preços
+                    $id = $dadosProcura['id_produto'];
+                    $preco = str_replace(",", ".", $dadosUpdate[0]['preco']);
+                    $quantidade = $dadosUpdate[0]['quantidade'];
+                    $tipoVenda = 1;
+                    $uf = $_POST['ufAtualizarPreco'];
+
+                    // Deleta os preços atuais
+                    $sql = "DELETE 
+                        FROM tb_preco
+                        WHERE fk_produto = ?
+                        AND uf = ?;";
+
+                    $statement = $conexao->prepare($sql);
+
+                    if (!$statement) {
+                        throw new Exception("Erro na preparação da consulta: " . $conexao->error);
+                    }
+
+                    $statement->bind_param("is", $id, $uf);
+
+                    if (!$statement->execute()) {
+                        throw new Exception("Erro na execução da consulta: " . $conexao->error);
+                    }
+
+                    // Adiciona os novos preços
+                    $sql = "INSERT INTO tb_preco(
                         fk_produto,
                         valor, 
                         quantidade, 
@@ -616,126 +613,6 @@ function atualizarPreco()
                         ?
                         );";
 
-                $statement = $conexao->prepare($sql);
-
-                if (!$statement) {
-                    throw new Exception("Erro na preparação da consulta: " . $conexao->error);
-                }
-
-                $statement->bind_param("idiis", $id, $preco, $quantidade, $tipoVenda, $uf);
-
-                if (!$statement->execute()) {
-                    throw new Exception("Erro na execução da consulta: " . $conexao->error);
-                }
-
-                // Alterar status do vinculo de filial_produto para "PENDENTE - int:(2)"
-
-                // =================================================================================
-                // Codigo precisa ser corrigido para caso seja adicionado mais filiais, ainda é
-                // limitada trazendo suporte somente as filiais "CP", "RD", "MX", "NV" e "NA".
-                // =================================================================================
-                if ($uf == "PR") {
-                    $sql = "UPDATE filial_produto 
-                        SET status = 2 
-                        WHERE fk_produto = ?
-                        AND
-                        (fk_filial = 1 OR fk_filial = 2 OR fk_filial = 3);";
-                } else {
-                    $sql = "UPDATE filial_produto 
-                        SET status = 2 
-                        WHERE fk_produto = ?
-                        AND
-                        (fk_filial = 4 OR fk_filial = 5);";
-                }
-
-                $statement = $conexao->prepare($sql);
-
-                if (!$statement) {
-                    throw new Exception("Erro na preparação da consulta: " . $conexao->error);
-                }
-
-                $statement->bind_param("i", $id);
-
-                if (!$statement->execute()) {
-                    throw new Exception("Erro na execução da consulta: " . $conexao->error);
-                }
-            }
-        } else {
-
-            $vaiAlterar = false;
-
-            foreach ($dadosUpdate as $produto) {
-                $diferenca = floatval($produto['porc']);
-                if ($diferenca != 0) {
-                    $vaiAlterar = true;
-                    break;
-                }
-            }
-
-            if ($vaiAlterar == false) {
-                continue;
-            }
-
-            $sql = "SELECT p.id_produto 
-                    FROM tb_produto p 
-                    WHERE p.cod_produto = ?;";
-
-            $statement = $conexao->prepare($sql);
-
-            if (!$statement) {
-                throw new Exception("Erro na preparação da consulta: " . $conexao->error);
-            }
-
-            $statement->bind_param("i", $dadosUpdate[0]['codigo']);
-
-            if (!$statement->execute()) {
-                throw new Exception("Erro na execução da consulta: " . $conexao->error);
-            }
-
-            $result = $statement->get_result();
-
-            if (!$result) {
-                throw new Exception("Erro ao obter os resultados da consulta: " . $conexao->error);
-            }
-
-            $dadosProcura = $result->fetch_assoc();
-
-            if (isset($dadosProcura['id_produto'])) {
-
-                $id = $dadosProcura['id_produto'];
-                $uf = $_POST['ufAtualizarPreco'];
-
-                // Deleta os preços atuais
-                $sql = "DELETE 
-                        FROM tb_preco
-                        WHERE fk_produto = ?
-                        AND uf = ?;";
-
-                $statement = $conexao->prepare($sql);
-
-                if (!$statement) {
-                    throw new Exception("Erro na preparação da consulta: " . $conexao->error);
-                }
-
-                $statement->bind_param("is", $id, $uf);
-
-                if (!$statement->execute()) {
-                    throw new Exception("Erro na execução da consulta: " . $conexao->error);
-                }
-
-                foreach ($dadosUpdate as $produto) {
-
-                    // // Captura os novos preços
-                    $preco = str_replace(",", ".", $produto['preco']);
-                    $quantidade = $produto['quantidade'];
-                    $tipoVenda = 2;
-
-                    // Adiciona os novos preços
-                    $sql = "INSERT INTO tb_preco
-                            (fk_produto, valor, quantidade, tipo_venda, uf) 
-                            VALUES 
-                            (?, ?, ?, ?, ?);";
-
                     $statement = $conexao->prepare($sql);
 
                     if (!$statement) {
@@ -747,28 +624,59 @@ function atualizarPreco()
                     if (!$statement->execute()) {
                         throw new Exception("Erro na execução da consulta: " . $conexao->error);
                     }
-                }
 
-                // Alterar status do vinculo de filial_produto para "PENDENTE - int:(2)"
+                    // Alterar status do vinculo de filial_produto para "PENDENTE - int:(2)"
 
-                // =================================================================================
-                // Codigo precisa ser corrigido para caso seja adicionado mais filiais, ainda é
-                // limitada trazendo suporte somente as filiais "CP", "RD", "MX", "NV" e "NA".
-                // =================================================================================
-                if ($uf == "PR") {
-                    $sql = "UPDATE filial_produto 
+                    // =================================================================================
+                    // Codigo precisa ser corrigido para caso seja adicionado mais filiais, ainda é
+                    // limitada trazendo suporte somente as filiais "CP", "RD", "MX", "NV" e "NA".
+                    // =================================================================================
+                    if ($uf == "PR") {
+                        $sql = "UPDATE filial_produto 
                         SET status = 2 
                         WHERE fk_produto = ?
                         AND
                         (fk_filial = 1 OR fk_filial = 2 OR fk_filial = 3);";
-                } else {
-                    $sql = "UPDATE filial_produto 
+                    } else {
+                        $sql = "UPDATE filial_produto 
                         SET status = 2 
                         WHERE fk_produto = ?
                         AND
                         (fk_filial = 4 OR fk_filial = 5);";
-                }
+                    }
 
+                    $statement = $conexao->prepare($sql);
+
+                    if (!$statement) {
+                        throw new Exception("Erro na preparação da consulta: " . $conexao->error);
+                    }
+
+                    $statement->bind_param("i", $id);
+
+                    if (!$statement->execute()) {
+                        throw new Exception("Erro na execução da consulta: " . $conexao->error);
+                    }else{
+                        echo "Atualizado";
+                    }
+                }
+            }
+        } else {
+
+            $vaiAlterarProduto = false;
+
+            foreach ($dadosUpdate as $produtoConferir) {
+                $diferencaPorcentagem = floatval(str_replace(",", ".", $produtoConferir['porc']));
+                echo "$diferencaPorcentagem\n";
+                echo ($diferencaPorcentagem != 0.0), "\n";
+                if ($diferencaPorcentagem != 0.0) {
+                    $vaiAlterarProduto = true;
+                }
+            }
+
+            if ($vaiAlterarProduto == true) {
+                $sql = "SELECT p.id_produto 
+                    FROM tb_produto p 
+                    WHERE p.cod_produto = ?;";
 
                 $statement = $conexao->prepare($sql);
 
@@ -776,10 +684,103 @@ function atualizarPreco()
                     throw new Exception("Erro na preparação da consulta: " . $conexao->error);
                 }
 
-                $statement->bind_param("i", $id);
+                $statement->bind_param("i", $dadosUpdate[0]['codigo']);
 
                 if (!$statement->execute()) {
                     throw new Exception("Erro na execução da consulta: " . $conexao->error);
+                }
+
+                $result = $statement->get_result();
+
+                if (!$result) {
+                    throw new Exception("Erro ao obter os resultados da consulta: " . $conexao->error);
+                }
+
+                $dadosProcura = $result->fetch_assoc();
+
+                if (isset($dadosProcura['id_produto'])) {
+
+                    $id = $dadosProcura['id_produto'];
+                    $uf = $_POST['ufAtualizarPreco'];
+
+                    // Deleta os preços atuais
+                    $sql = "DELETE 
+                        FROM tb_preco
+                        WHERE fk_produto = ?
+                        AND uf = ?;";
+
+                    $statement = $conexao->prepare($sql);
+
+                    if (!$statement) {
+                        throw new Exception("Erro na preparação da consulta: " . $conexao->error);
+                    }
+
+                    $statement->bind_param("is", $id, $uf);
+
+                    if (!$statement->execute()) {
+                        throw new Exception("Erro na execução da consulta: " . $conexao->error);
+                    }
+
+                    foreach ($dadosUpdate as $produto) {
+
+                        // // Captura os novos preços
+                        $preco = str_replace(",", ".", $produto['preco']);
+                        $quantidade = $produto['quantidade'];
+                        $tipoVenda = 2;
+
+                        // Adiciona os novos preços
+                        $sql = "INSERT INTO tb_preco
+                            (fk_produto, valor, quantidade, tipo_venda, uf) 
+                            VALUES 
+                            (?, ?, ?, ?, ?);";
+
+                        $statement = $conexao->prepare($sql);
+
+                        if (!$statement) {
+                            throw new Exception("Erro na preparação da consulta: " . $conexao->error);
+                        }
+
+                        $statement->bind_param("idiis", $id, $preco, $quantidade, $tipoVenda, $uf);
+
+                        if (!$statement->execute()) {
+                            throw new Exception("Erro na execução da consulta: " . $conexao->error);
+                        }
+                    }
+
+                    // Alterar status do vinculo de filial_produto para "PENDENTE - int:(2)"
+
+                    // =================================================================================
+                    // Codigo precisa ser corrigido para caso seja adicionado mais filiais, ainda é
+                    // limitada trazendo suporte somente as filiais "CP", "RD", "MX", "NV" e "NA".
+                    // =================================================================================
+                    if ($uf == "PR") {
+                        $sql = "UPDATE filial_produto 
+                        SET status = 2 
+                        WHERE fk_produto = ?
+                        AND
+                        (fk_filial = 1 OR fk_filial = 2 OR fk_filial = 3);";
+                    } else {
+                        $sql = "UPDATE filial_produto 
+                        SET status = 2 
+                        WHERE fk_produto = ?
+                        AND
+                        (fk_filial = 4 OR fk_filial = 5);";
+                    }
+
+
+                    $statement = $conexao->prepare($sql);
+
+                    if (!$statement) {
+                        throw new Exception("Erro na preparação da consulta: " . $conexao->error);
+                    }
+
+                    $statement->bind_param("i", $id);
+
+                    if (!$statement->execute()) {
+                        throw new Exception("Erro na execução da consulta: " . $conexao->error);
+                    }else{
+                        echo "Atualizado";
+                    }
                 }
             }
         }
